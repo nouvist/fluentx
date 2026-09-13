@@ -1,0 +1,16 @@
+# Run with `dart run ffigen --config ffigen.yaml`.
+name: FluentxBindings
+description: |
+  Bindings for `src/fluentx.h`.
+
+  Regenerate bindings with `dart run ffigen --config ffigen.yaml`.
+output: 'lib/fluentx_bindings_generated.dart'
+headers:
+  entry-points:
+    - 'src/fluentx.h'
+  include-directives:
+    - 'src/fluentx.h'
+ffi-native:
+comments:
+  style: any
+  length: full
