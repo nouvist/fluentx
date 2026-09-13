@@ -6,19 +6,29 @@ Future<void> main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    FluentxBackdrop.add(.mica);
+  }
+
+  @override
+  void dispose() {
+    FluentxBackdrop.pop();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final accent = FluentxAccentColors.current();
-    print(accent.light3.toARGB32().toRadixString(16));
-    print(accent.light2.toARGB32().toRadixString(16));
-    print(accent.light1.toARGB32().toRadixString(16));
-    print(accent.base.toARGB32().toRadixString(16));
-    print(accent.dark1.toARGB32().toRadixString(16));
-    print(accent.dark2.toARGB32().toRadixString(16));
-    print(accent.dark3.toARGB32().toRadixString(16));
 
     return MaterialApp(
       home: Scaffold(

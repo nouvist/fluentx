@@ -1,3 +1,5 @@
-rust_input: crate::foundations::colors
+rust_input:
+  crate::foundations::colors,
+  crate::foundations::backdrop,
 rust_root: rust/
 dart_output: lib/src/rust
