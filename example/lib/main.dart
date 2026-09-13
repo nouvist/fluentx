@@ -34,8 +34,7 @@ class _MyAppState extends State<MyApp> {
       home: Scaffold(
         backgroundColor: Colors.transparent,
         body: Center(
-          child: Row(
-            mainAxisAlignment: .center,
+          child: Wrap(
             crossAxisAlignment: .center,
             children: [
               Container(

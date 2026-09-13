@@ -1,21 +1,29 @@
 use std::{ffi::c_void, mem, sync::OnceLock};
 
 use flutter_rust_bridge::frb;
+#[cfg(windows)]
 use windows::{
+    core::BOOL,
     Win32::{
-        Foundation::{HWND, LPARAM}, Graphics::Dwm::{
-            DWM_SYSTEMBACKDROP_TYPE, DWMSBT_MAINWINDOW, DWMSBT_NONE, DWMSBT_TABBEDWINDOW, DWMSBT_TRANSIENTWINDOW, DWMWA_SYSTEMBACKDROP_TYPE, DwmExtendFrameIntoClientArea, DwmSetWindowAttribute,
-        }, System::Threading::GetCurrentProcessId, UI::{
+        Foundation::{HWND, LPARAM},
+        Graphics::Dwm::{
+            DwmExtendFrameIntoClientArea, DwmSetWindowAttribute, DWMSBT_MAINWINDOW, DWMSBT_NONE,
+            DWMSBT_TABBEDWINDOW, DWMSBT_TRANSIENTWINDOW, DWMWA_SYSTEMBACKDROP_TYPE,
+            DWM_SYSTEMBACKDROP_TYPE,
+        },
+        System::Threading::GetCurrentProcessId,
+        UI::{
             Controls::MARGINS,
             WindowsAndMessaging::{EnumWindows, GetWindowThreadProcessId},
         },
-    }, core::BOOL,
+    },
 };
 
 #[frb(opaque)]
 pub struct FluentxNativeBackdrop;
 
 impl FluentxNativeBackdrop {
+    #[cfg(windows)]
     fn window() -> HWND {
         static INSTANCE: OnceLock<usize> = OnceLock::new();
         let instance = INSTANCE.get_or_init(|| {
@@ -51,6 +59,7 @@ impl FluentxNativeBackdrop {
     }
 
     #[frb(sync)]
+    #[cfg(windows)]
     pub fn extend() {
         _ = unsafe {
             DwmExtendFrameIntoClientArea(
@@ -66,6 +75,7 @@ impl FluentxNativeBackdrop {
     }
 
     #[frb(sync)]
+    #[cfg(windows)]
     pub fn none() {
         _ = unsafe {
             DwmSetWindowAttribute(
@@ -78,6 +88,7 @@ impl FluentxNativeBackdrop {
     }
 
     #[frb(sync)]
+    #[cfg(windows)]
     pub fn mica() {
         _ = unsafe {
             DwmSetWindowAttribute(
@@ -90,6 +101,7 @@ impl FluentxNativeBackdrop {
     }
 
     #[frb(sync)]
+    #[cfg(windows)]
     pub fn tabbed() {
         _ = unsafe {
             DwmSetWindowAttribute(
@@ -100,4 +112,20 @@ impl FluentxNativeBackdrop {
             )
         };
     }
+
+    #[frb(sync)]
+    #[cfg(not(windows))]
+    pub fn extend() {}
+
+    #[frb(sync)]
+    #[cfg(not(windows))]
+    pub fn none() {}
+
+    #[frb(sync)]
+    #[cfg(not(windows))]
+    pub fn mica() {}
+
+    #[frb(sync)]
+    #[cfg(not(windows))]
+    pub fn tabbed() {}
 }
