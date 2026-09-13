@@ -1,3 +1,7 @@
+# Flutter Rust Bridge generated
+rust/src/frb_generated.rs
+lib/src/rust
+
 # Miscellaneous
 *.class
 *.log
