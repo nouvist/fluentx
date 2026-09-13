@@ -6,31 +6,71 @@ Future<void> main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  late String str;
-
-  @override
-  void initState() {
-    super.initState();
-    str = greet(name: "Nouvist");
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final accent = FluentxAccentColors.current();
+    print(accent.light3.toARGB32().toRadixString(16));
+    print(accent.light2.toARGB32().toRadixString(16));
+    print(accent.light1.toARGB32().toRadixString(16));
+    print(accent.base.toARGB32().toRadixString(16));
+    print(accent.dark1.toARGB32().toRadixString(16));
+    print(accent.dark2.toARGB32().toRadixString(16));
+    print(accent.dark3.toARGB32().toRadixString(16));
+
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(title: const Text('Native Packages')),
-        body: SingleChildScrollView(
-          child: Container(
-            padding: const .all(10),
-            child: Center(child: Text(str)),
+        backgroundColor: Colors.transparent,
+        body: Center(
+          child: Row(
+            mainAxisAlignment: .center,
+            crossAxisAlignment: .center,
+            children: [
+              Container(
+                width: 64,
+                height: 64,
+                color: accent.dark3,
+                child: Center(child: Text('Dark3')),
+              ),
+              Container(
+                width: 64,
+                height: 64,
+                color: accent.dark2,
+                child: Center(child: Text('Dark2')),
+              ),
+              Container(
+                width: 64,
+                height: 64,
+                color: accent.dark1,
+                child: Center(child: Text('Dark1')),
+              ),
+              Container(
+                width: 64,
+                height: 64,
+                color: accent.base,
+                child: Center(child: Text('Base')),
+              ),
+              Container(
+                width: 64,
+                height: 64,
+                color: accent.light1,
+                child: Center(child: Text('Light1')),
+              ),
+              Container(
+                width: 64,
+                height: 64,
+                color: accent.light2,
+                child: Center(child: Text('Light2')),
+              ),
+              Container(
+                width: 64,
+                height: 64,
+                color: accent.light3,
+                child: Center(child: Text('Light3')),
+              ),
+            ],
           ),
         ),
       ),
