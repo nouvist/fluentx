@@ -3,11 +3,72 @@ import 'dart:ui';
 import 'package:fluentx/src/rust/foundations/colors.dart';
 
 class FluentxColors {
+  final Brightness brightness;
   final FluentxAccentColors accent;
   final FluentxTextColors text;
+  final FluentxTextAccentColors textAccent;
+  final FluentxTextOnAccentColors textOnAccent;
+  final FluentxControlColors control;
+  final FluentxControlAltColors controlAlt;
+  final FluentxControlSolidColors controlSolid;
+  final FluentxControlStrongColors controlStrong;
+  final FluentxControlSubtleColors controlSubtle;
+  final FluentxControlOnImageColors controlOnImage;
 
-  const FluentxColors.light([this.accent = .fallback]) : text = .light;
-  const FluentxColors.dark([this.accent = .fallback]) : text = .dark;
+  const FluentxColors({
+    required this.brightness,
+    required this.accent,
+    required this.text,
+    required this.textAccent,
+    required this.textOnAccent,
+    required this.control,
+    required this.controlAlt,
+    required this.controlSolid,
+    required this.controlStrong,
+    required this.controlSubtle,
+    required this.controlOnImage,
+  });
+
+  factory FluentxColors.current() {
+    final native = FluentxNativeBrightness.current();
+    if (native == null) return .light(.current());
+    return switch (native) {
+      .dark => .dark(.current()),
+      .light => .light(.current()),
+    };
+  }
+
+  factory FluentxColors.light(FluentxAccentColors accent) {
+    return .new(
+      brightness: .light,
+      accent: accent,
+      text: .light,
+      textAccent: .light(accent),
+      textOnAccent: .light,
+      control: .light,
+      controlAlt: .light,
+      controlSolid: .light,
+      controlStrong: .light,
+      controlSubtle: .light,
+      controlOnImage: .light,
+    );
+  }
+
+  factory FluentxColors.dark(FluentxAccentColors accent) {
+    return .new(
+      brightness: .dark,
+      accent: accent,
+      text: .dark,
+      textAccent: .dark(accent),
+      textOnAccent: .dark,
+      control: .dark,
+      controlAlt: .dark,
+      controlSolid: .dark,
+      controlStrong: .dark,
+      controlSubtle: .dark,
+      controlOnImage: .dark,
+    );
+  }
 }
 
 class FluentxAccentColors {
@@ -68,16 +129,261 @@ class FluentxTextColors {
   });
 
   static const dark = FluentxTextColors(
+    primary: Color(0xffffffff),
+    secondary: Color(0xc5ffffff),
+    tertiary: Color(0x87ffffff),
+    disabled: Color(0x5dffffff),
+  );
+
+  static const light = FluentxTextColors(
     primary: Color(0xe4000000),
     secondary: Color(0x9e000000),
     tertiary: Color(0x72000000),
     disabled: Color(0x5c000000),
   );
+}
 
-  static const light = FluentxTextColors(
+class FluentxTextAccentColors {
+  final Color primary;
+  final Color secondary;
+  final Color tertiary;
+  final Color disabled;
+
+  const FluentxTextAccentColors({
+    required this.primary,
+    required this.secondary,
+    required this.tertiary,
+    required this.disabled,
+  });
+
+  factory FluentxTextAccentColors.dark(FluentxAccentColors accent) => .new(
+    primary: accent.light3,
+    secondary: accent.light3,
+    tertiary: accent.light2,
+    disabled: const Color(0x5dffffff),
+  );
+
+  factory FluentxTextAccentColors.light(FluentxAccentColors accent) => .new(
+    primary: accent.dark2,
+    secondary: accent.dark3,
+    tertiary: accent.dark1,
+    disabled: const Color(0x5c000000),
+  );
+}
+
+class FluentxTextOnAccentColors {
+  final Color primary;
+  final Color secondary;
+  final Color tertiary;
+  final Color disabled;
+
+  const FluentxTextOnAccentColors({
+    required this.primary,
+    required this.secondary,
+    required this.tertiary,
+    required this.disabled,
+  });
+
+  static const dark = FluentxTextOnAccentColors(
+    primary: Color(0xff000000),
+    secondary: Color(0x80000000),
+    tertiary: Color(0x87000000),
+    disabled: Color(0xffffffff),
+  );
+
+  static const light = FluentxTextOnAccentColors(
     primary: Color(0xffffffff),
-    secondary: Color(0xc5ffffff),
-    tertiary: Color(0x87ffffff),
-    disabled: Color(0x5dffffff),
+    secondary: Color(0xb3ffffff),
+    tertiary: Color(0xb3ffffff),
+    disabled: Color(0xffffffff),
+  );
+}
+
+class FluentxControlColors {
+  final Color primary;
+  final Color secondary;
+  final Color tertiary;
+  final Color quarternary;
+  final Color disabled;
+  final Color transparent;
+  final Color active;
+
+  const FluentxControlColors({
+    required this.primary,
+    required this.secondary,
+    required this.tertiary,
+    required this.quarternary,
+    required this.disabled,
+    required this.transparent,
+    required this.active,
+  });
+
+  static const dark = FluentxControlColors(
+    primary: Color(0x0fffffff),
+    secondary: Color(0x15ffffff),
+    tertiary: Color(0x0bffffff),
+    quarternary: Color(0x0fffffff),
+    disabled: Color(0x4df9f9f9),
+    transparent: Color(0x00ffffff),
+    active: Color(0xb31e1e1e),
+  );
+
+  static const light = FluentxControlColors(
+    primary: Color(0xb3ffffff),
+    secondary: Color(0x80f9f9f9),
+    tertiary: Color(0x4df9f9f9),
+    quarternary: Color(0xc2f3f3f3),
+    disabled: Color(0x4df9f9f9),
+    transparent: Color(0x00ffffff),
+    active: Color(0xffffffff),
+  );
+}
+
+class FluentxControlAltColors {
+  final Color primary;
+  final Color secondary;
+  final Color tertiary;
+  final Color quarternary;
+  final Color disabled;
+
+  const FluentxControlAltColors({
+    required this.primary,
+    required this.secondary,
+    required this.tertiary,
+    required this.quarternary,
+    required this.disabled,
+  });
+
+  static const dark = FluentxControlAltColors(
+    primary: Color(0x00ffffff),
+    secondary: Color(0x19000000),
+    tertiary: Color(0x0bffffff),
+    quarternary: Color(0x12ffffff),
+    disabled: Color(0x00ffffff),
+  );
+
+  static const light = FluentxControlAltColors(
+    primary: Color(0x00ffffff),
+    secondary: Color(0x06000000),
+    tertiary: Color(0x0f000000),
+    quarternary: Color(0x18000000),
+    disabled: Color(0x00ffffff),
+  );
+}
+
+class FluentxControlSolidColors {
+  final Color primary;
+
+  const FluentxControlSolidColors({required this.primary});
+
+  static const dark = FluentxControlSolidColors(primary: Color(0xff454545));
+  static const light = FluentxControlSolidColors(primary: Color(0xffffffff));
+}
+
+class FluentxControlStrongColors {
+  final Color primary;
+  final Color disabled;
+
+  const FluentxControlStrongColors({
+    required this.primary,
+    required this.disabled,
+  });
+
+  static const dark = FluentxControlStrongColors(
+    primary: Color(0x8bffffff),
+    disabled: Color(0x3fffffff),
+  );
+
+  static const light = FluentxControlStrongColors(
+    primary: Color(0x72000000),
+    disabled: Color(0x51000000),
+  );
+}
+
+class FluentxControlSubtleColors {
+  final Color primary;
+  final Color secondary;
+  final Color tertiary;
+  final Color disabled;
+
+  const FluentxControlSubtleColors({
+    required this.primary,
+    required this.secondary,
+    required this.tertiary,
+    required this.disabled,
+  });
+
+  static const dark = FluentxControlSubtleColors(
+    primary: Color(0x00ffffff),
+    secondary: Color(0x0fffffff),
+    tertiary: Color(0x0affffff),
+    disabled: Color(0x00ffffff),
+  );
+
+  static const light = FluentxControlSubtleColors(
+    primary: Color(0x00000000),
+    secondary: Color(0x09000000),
+    tertiary: Color(0x06000000),
+    disabled: Color(0x00000000),
+  );
+}
+
+class FluentxControlOnImageColors {
+  final Color primary;
+  final Color secondary;
+  final Color tertiary;
+  final Color disabled;
+
+  const FluentxControlOnImageColors({
+    required this.primary,
+    required this.secondary,
+    required this.tertiary,
+    required this.disabled,
+  });
+
+  static const dark = FluentxControlOnImageColors(
+    primary: Color(0xb31c1c1c),
+    secondary: Color(0xff1a1a1a),
+    tertiary: Color(0xff131313),
+    disabled: Color(0xff1e1e1e),
+  );
+
+  static const light = FluentxControlOnImageColors(
+    primary: Color(0xc9ffffff),
+    secondary: Color(0xfff3f3f3),
+    tertiary: Color(0xffebebeb),
+    disabled: Color(0x00ffffff),
+  );
+}
+
+class FluentxControlAccentColors {
+  final Color primary;
+  final Color secondary;
+  final Color tertiary;
+  final Color disabled;
+  final Color selected;
+
+  const FluentxControlAccentColors({
+    required this.primary,
+    required this.secondary,
+    required this.tertiary,
+    required this.disabled,
+    required this.selected,
+  });
+
+  factory FluentxControlAccentColors.dark(FluentxAccentColors accent) => .new(
+    primary: accent.light2,
+    secondary: accent.light2.withAlpha((0.9 * 255).toInt()),
+    tertiary: accent.light2.withAlpha((0.8 * 255).toInt()),
+    disabled: Color(0x28ffffff),
+    selected: accent.base,
+  );
+
+  factory FluentxControlAccentColors.light(FluentxAccentColors accent) => .new(
+    primary: accent.dark2,
+    secondary: accent.dark2.withAlpha((0.9 * 255).toInt()),
+    tertiary: accent.dark2.withAlpha((0.8 * 255).toInt()),
+    disabled: Color(0x37000000),
+    selected: accent.base,
   );
 }

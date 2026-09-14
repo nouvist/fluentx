@@ -28,61 +28,69 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    final accent = FluentxAccentColors.current();
+    final c = FluentxColors.current();
 
     return MaterialApp(
       home: Scaffold(
         backgroundColor: Colors.transparent,
-        body: Center(
-          child: Wrap(
-            crossAxisAlignment: .center,
-            children: [
-              Container(
-                width: 64,
-                height: 64,
-                color: accent.dark3,
-                child: Center(child: Text('Dark3')),
-              ),
-              Container(
-                width: 64,
-                height: 64,
-                color: accent.dark2,
-                child: Center(child: Text('Dark2')),
-              ),
-              Container(
-                width: 64,
-                height: 64,
-                color: accent.dark1,
-                child: Center(child: Text('Dark1')),
-              ),
-              Container(
-                width: 64,
-                height: 64,
-                color: accent.base,
-                child: Center(child: Text('Base')),
-              ),
-              Container(
-                width: 64,
-                height: 64,
-                color: accent.light1,
-                child: Center(child: Text('Light1')),
-              ),
-              Container(
-                width: 64,
-                height: 64,
-                color: accent.light2,
-                child: Center(child: Text('Light2')),
-              ),
-              Container(
-                width: 64,
-                height: 64,
-                color: accent.light3,
-                child: Center(child: Text('Light3')),
-              ),
-            ],
-          ),
+        body: ListView(
+          padding: .all(32),
+          children: [
+            ColorTile(
+              title: Text("Text"),
+              children: [
+                ColorPreview(c.text.primary),
+                ColorPreview(c.text.secondary),
+                ColorPreview(c.text.tertiary),
+                ColorPreview(c.text.disabled),
+              ],
+            ),
+            ColorTile(
+              title: Text("Text Accent"),
+              children: [
+                ColorPreview(c.textAccent.primary),
+                ColorPreview(c.textAccent.secondary),
+                ColorPreview(c.textAccent.tertiary),
+                ColorPreview(c.textAccent.disabled),
+              ],
+            ),
+          ],
         ),
       ),
     );
+  }
+}
+
+class ColorTile extends StatelessWidget {
+  final Widget title;
+  final List<Widget> children;
+
+  const ColorTile({super.key, required this.title, required this.children});
+
+  @override
+  Widget build(BuildContext context) {
+    final c = FluentxColors.current();
+    return Row(
+      children: [
+        Expanded(
+          child: DefaultTextStyle.merge(
+            style: .new(color: c.text.primary),
+            child: title,
+          ),
+        ),
+        Expanded(flex: 3, child: Wrap(children: children)),
+      ],
+    );
+  }
+}
+
+class ColorPreview extends StatelessWidget {
+  final Color color;
+
+  const ColorPreview(this.color, {super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(width: 48, height: 48, color: color);
   }
 }

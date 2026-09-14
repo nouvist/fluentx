@@ -8,8 +8,7 @@ use windows::{
         Foundation::{HWND, LPARAM},
         Graphics::Dwm::{
             DwmExtendFrameIntoClientArea, DwmSetWindowAttribute, DWMSBT_MAINWINDOW, DWMSBT_NONE,
-            DWMSBT_TABBEDWINDOW, DWMSBT_TRANSIENTWINDOW, DWMWA_SYSTEMBACKDROP_TYPE,
-            DWM_SYSTEMBACKDROP_TYPE,
+            DWMSBT_TABBEDWINDOW, DWMWA_SYSTEMBACKDROP_TYPE, DWM_SYSTEMBACKDROP_TYPE,
         },
         System::Threading::GetCurrentProcessId,
         UI::{
@@ -56,6 +55,12 @@ impl FluentxNativeBackdrop {
         });
 
         HWND(*instance as *mut c_void)
+    }
+
+    #[frb(sync)]
+    #[cfg(windows)]
+    pub fn is_native() -> bool {
+        true
     }
 
     #[frb(sync)]
@@ -111,6 +116,12 @@ impl FluentxNativeBackdrop {
                 mem::size_of::<DWM_SYSTEMBACKDROP_TYPE>() as u32,
             )
         };
+    }
+
+    #[frb(sync)]
+    #[cfg(not(windows))]
+    pub fn is_native() -> bool {
+        false
     }
 
     #[frb(sync)]
