@@ -50,7 +50,9 @@ class _FluentxThemeState extends State<FluentxTheme>
 
   void _handleRefresh() async {
     _timer?.cancel();
-    _timer = .new(.new(milliseconds: 100), () {
+    _timer = .new(.new(milliseconds: 100), () async {
+      await yieldNow();
+      if (!mounted) return;
       setState(() {
         _key = UniqueKey();
         colors = .current();

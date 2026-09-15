@@ -12,17 +12,23 @@ use tokio::sync::RwLock;
 use windows::{
     core::BOOL,
     Win32::{
-        Foundation::{HWND, LPARAM, LRESULT, WPARAM},
+        Foundation::{FALSE, HWND, LPARAM, LRESULT, TRUE, WPARAM},
         Graphics::Dwm::{
             DwmExtendFrameIntoClientArea, DwmSetWindowAttribute, DWMSBT_MAINWINDOW, DWMSBT_NONE,
             DWMSBT_TABBEDWINDOW, DWMWA_SYSTEMBACKDROP_TYPE, DWMWA_USE_IMMERSIVE_DARK_MODE,
-            DWM_SYSTEMBACKDROP_TYPE,
+            DWMWA_WINDOW_CORNER_PREFERENCE, DWMWCP_ROUND, DWM_SYSTEMBACKDROP_TYPE,
+            DWM_WINDOW_CORNER_PREFERENCE,
         },
         System::Threading::GetCurrentProcessId,
         UI::{
             Controls::MARGINS,
             Shell::{DefSubclassProc, SetWindowSubclass},
-            WindowsAndMessaging::{EnumWindows, GetWindowThreadProcessId, WM_SETTINGCHANGE},
+            WindowsAndMessaging::{
+                EnumWindows, GetWindowLongPtrW, GetWindowThreadProcessId, SetWindowLongPtrW,
+                SetWindowPos, GWL_STYLE, SWP_DRAWFRAME, SWP_FRAMECHANGED, SWP_NOMOVE,
+                SWP_NOOWNERZORDER, SWP_NOSIZE, SWP_NOZORDER, WM_NCCALCSIZE, WM_SETTINGCHANGE,
+                WS_SYSMENU,
+            },
         },
     },
 };
@@ -31,13 +37,13 @@ use crate::foundations::colors::FluentxNativeBrightness;
 
 struct FluentxNativeWindowInner {
     hwnd: usize,
+    next: AtomicU64,
     listeners: RwLock<
         Vec<(
             u64,
             Box<dyn Fn() -> DartFnFuture<()> + Send + Sync + 'static>,
         )>,
     >,
-    next: AtomicU64,
 }
 
 #[frb(opaque)]
@@ -83,10 +89,10 @@ impl FluentxNativeWindow {
             _ = GetWindowThreadProcessId(hwnd, Some(&mut pid));
             if pid == param.pid {
                 param.hwnd = hwnd;
-                return BOOL(0);
+                return FALSE;
             }
 
-            BOOL(1)
+            TRUE
         }
 
         unsafe {
@@ -105,6 +111,18 @@ impl FluentxNativeWindow {
                 it_ptr as usize,
             );
 
+            let corner = DWMWCP_ROUND;
+            _ = DwmSetWindowAttribute(
+                it.raw(),
+                DWMWA_WINDOW_CORNER_PREFERENCE,
+                &corner as *const _ as *const c_void,
+                mem::size_of::<DWM_WINDOW_CORNER_PREFERENCE>() as u32,
+            );
+
+            let mut style = GetWindowLongPtrW(it.raw(), GWL_STYLE) as u32;
+            style &= !WS_SYSMENU.0;
+            SetWindowLongPtrW(it.raw(), GWL_STYLE, style as isize);
+
             it
         }
     }
@@ -113,6 +131,20 @@ impl FluentxNativeWindow {
     #[cfg(windows)]
     pub fn raw(&self) -> HWND {
         HWND(self.0.hwnd as *mut _)
+    }
+
+    #[frb(sync)]
+    #[cfg(windows)]
+    pub fn refresh(&self) {
+        unsafe {
+            let swp = SWP_NOMOVE
+                | SWP_NOSIZE
+                | SWP_NOZORDER
+                | SWP_NOOWNERZORDER
+                | SWP_FRAMECHANGED
+                | SWP_DRAWFRAME;
+            _ = SetWindowPos(self.raw(), None, 0, 0, 0, 0, swp);
+        }
     }
 
     #[cfg(windows)]
@@ -131,8 +163,8 @@ impl FluentxNativeWindow {
         if umsg == WM_SETTINGCHANGE {
             let brightness = FluentxNativeBrightness::current();
             let is_dark = match brightness {
-                Some(FluentxNativeBrightness::Dark) => BOOL(1),
-                _ => BOOL(0),
+                Some(FluentxNativeBrightness::Dark) => TRUE,
+                _ => FALSE,
             };
 
             crate::spawn(async move {
@@ -148,6 +180,8 @@ impl FluentxNativeWindow {
                 &is_dark as *const _ as *const c_void,
                 mem::size_of::<BOOL>() as u32,
             );
+        } else if umsg == WM_NCCALCSIZE {
+            return LRESULT(0);
         }
 
         DefSubclassProc(hwnd, umsg, wparam, lparam)
