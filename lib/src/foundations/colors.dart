@@ -5,28 +5,38 @@ import 'package:fluentx/src/rust/foundations/colors.dart';
 class FluentxColors {
   final Brightness brightness;
   final FluentxAccentColors accent;
-  final FluentxTextColors text;
-  final FluentxTextAccentColors textAccent;
-  final FluentxTextOnAccentColors textOnAccent;
+  final FluentxForegroundColors foreground;
+  final FluentxForegroundAccentColors foregroundAccent;
+  final FluentxForegroundOnAccentColors foregroundOnAccent;
   final FluentxControlColors control;
   final FluentxControlAltColors controlAlt;
   final FluentxControlSolidColors controlSolid;
   final FluentxControlStrongColors controlStrong;
   final FluentxControlSubtleColors controlSubtle;
   final FluentxControlOnImageColors controlOnImage;
+  final FluentxStrokeControlColors strokeControl;
+  final FluentxStrokeCardColors strokeCard;
+  final FluentxStrokeSurfaceColors strokeSurface;
+  final FluentxStrokeDividerColors strokeDivider;
+  final FluentxStrokeFocusColors strokeFocus;
 
   const FluentxColors({
     required this.brightness,
     required this.accent,
-    required this.text,
-    required this.textAccent,
-    required this.textOnAccent,
+    required this.foreground,
+    required this.foregroundAccent,
+    required this.foregroundOnAccent,
     required this.control,
     required this.controlAlt,
     required this.controlSolid,
     required this.controlStrong,
     required this.controlSubtle,
     required this.controlOnImage,
+    required this.strokeControl,
+    required this.strokeCard,
+    required this.strokeSurface,
+    required this.strokeDivider,
+    required this.strokeFocus,
   });
 
   factory FluentxColors.current() {
@@ -38,37 +48,43 @@ class FluentxColors {
     };
   }
 
-  factory FluentxColors.light(FluentxAccentColors accent) {
-    return .new(
-      brightness: .light,
-      accent: accent,
-      text: .light,
-      textAccent: .light(accent),
-      textOnAccent: .light,
-      control: .light,
-      controlAlt: .light,
-      controlSolid: .light,
-      controlStrong: .light,
-      controlSubtle: .light,
-      controlOnImage: .light,
-    );
-  }
+  factory FluentxColors.light(FluentxAccentColors accent) => .new(
+    brightness: .light,
+    accent: accent,
+    foreground: .light,
+    foregroundAccent: .light(accent),
+    foregroundOnAccent: .light,
+    control: .light,
+    controlAlt: .light,
+    controlSolid: .light,
+    controlStrong: .light,
+    controlSubtle: .light,
+    controlOnImage: .light,
+    strokeControl: .light,
+    strokeCard: .light,
+    strokeSurface: .light,
+    strokeDivider: .light,
+    strokeFocus: .light,
+  );
 
-  factory FluentxColors.dark(FluentxAccentColors accent) {
-    return .new(
-      brightness: .dark,
-      accent: accent,
-      text: .dark,
-      textAccent: .dark(accent),
-      textOnAccent: .dark,
-      control: .dark,
-      controlAlt: .dark,
-      controlSolid: .dark,
-      controlStrong: .dark,
-      controlSubtle: .dark,
-      controlOnImage: .dark,
-    );
-  }
+  factory FluentxColors.dark(FluentxAccentColors accent) => .new(
+    brightness: .dark,
+    accent: accent,
+    foreground: .dark,
+    foregroundAccent: .dark(accent),
+    foregroundOnAccent: .dark,
+    control: .dark,
+    controlAlt: .dark,
+    controlSolid: .dark,
+    controlStrong: .dark,
+    controlSubtle: .dark,
+    controlOnImage: .dark,
+    strokeControl: .dark,
+    strokeCard: .dark,
+    strokeSurface: .dark,
+    strokeDivider: .dark,
+    strokeFocus: .dark,
+  );
 }
 
 class FluentxAccentColors {
@@ -115,27 +131,27 @@ class FluentxAccentColors {
   );
 }
 
-class FluentxTextColors {
+class FluentxForegroundColors {
   final Color primary;
   final Color secondary;
   final Color tertiary;
   final Color disabled;
 
-  const FluentxTextColors({
+  const FluentxForegroundColors({
     required this.primary,
     required this.secondary,
     required this.tertiary,
     required this.disabled,
   });
 
-  static const dark = FluentxTextColors(
+  static const dark = FluentxForegroundColors(
     primary: Color(0xffffffff),
     secondary: Color(0xc5ffffff),
     tertiary: Color(0x87ffffff),
     disabled: Color(0x5dffffff),
   );
 
-  static const light = FluentxTextColors(
+  static const light = FluentxForegroundColors(
     primary: Color(0xe4000000),
     secondary: Color(0x9e000000),
     tertiary: Color(0x72000000),
@@ -143,27 +159,27 @@ class FluentxTextColors {
   );
 }
 
-class FluentxTextAccentColors {
+class FluentxForegroundAccentColors {
   final Color primary;
   final Color secondary;
   final Color tertiary;
   final Color disabled;
 
-  const FluentxTextAccentColors({
+  const FluentxForegroundAccentColors({
     required this.primary,
     required this.secondary,
     required this.tertiary,
     required this.disabled,
   });
 
-  factory FluentxTextAccentColors.dark(FluentxAccentColors accent) => .new(
+  factory FluentxForegroundAccentColors.dark(FluentxAccentColors accent) => .new(
     primary: accent.light3,
     secondary: accent.light3,
     tertiary: accent.light2,
     disabled: const Color(0x5dffffff),
   );
 
-  factory FluentxTextAccentColors.light(FluentxAccentColors accent) => .new(
+  factory FluentxForegroundAccentColors.light(FluentxAccentColors accent) => .new(
     primary: accent.dark2,
     secondary: accent.dark3,
     tertiary: accent.dark1,
@@ -171,27 +187,27 @@ class FluentxTextAccentColors {
   );
 }
 
-class FluentxTextOnAccentColors {
+class FluentxForegroundOnAccentColors {
   final Color primary;
   final Color secondary;
   final Color tertiary;
   final Color disabled;
 
-  const FluentxTextOnAccentColors({
+  const FluentxForegroundOnAccentColors({
     required this.primary,
     required this.secondary,
     required this.tertiary,
     required this.disabled,
   });
 
-  static const dark = FluentxTextOnAccentColors(
+  static const dark = FluentxForegroundOnAccentColors(
     primary: Color(0xff000000),
     secondary: Color(0x80000000),
     tertiary: Color(0x87000000),
     disabled: Color(0xffffffff),
   );
 
-  static const light = FluentxTextOnAccentColors(
+  static const light = FluentxForegroundOnAccentColors(
     primary: Color(0xffffffff),
     secondary: Color(0xb3ffffff),
     tertiary: Color(0xb3ffffff),
@@ -385,5 +401,115 @@ class FluentxControlAccentColors {
     tertiary: accent.dark2.withAlpha((0.8 * 255).toInt()),
     disabled: Color(0x37000000),
     selected: accent.base,
+  );
+}
+
+class FluentxStrokeControlColors {
+  final Color primary;
+  final Color secondary;
+  final Color onAccentPrimary;
+  final Color onAccentSecondary;
+  final Color onAccentTertiary;
+  final Color onAccentDisabled;
+  final Color onImage;
+
+  const FluentxStrokeControlColors({
+    required this.primary,
+    required this.secondary,
+    required this.onAccentPrimary,
+    required this.onAccentSecondary,
+    required this.onAccentTertiary,
+    required this.onAccentDisabled,
+    required this.onImage,
+  });
+
+  static const dark = FluentxStrokeControlColors(
+    primary: Color(0x12ffffff),
+    secondary: Color(0x18ffffff),
+    onAccentPrimary: Color(0x14ffffff),
+    onAccentSecondary: Color(0x23000000),
+    onAccentTertiary: Color(0x37000000),
+    onAccentDisabled: Color(0x33000000),
+    onImage: Color(0x6b000000),
+  );
+
+  static const light = FluentxStrokeControlColors(
+    primary: Color(0x0f000000),
+    secondary: Color(0x29000000),
+    onAccentPrimary: Color(0x14ffffff),
+    onAccentSecondary: Color(0x66000000),
+    onAccentTertiary: Color(0x37000000),
+    onAccentDisabled: Color(0x0f000000),
+    onImage: Color(0x59ffffff),
+  );
+}
+
+class FluentxStrokeCardColors {
+  final Color primaryTransparent;
+  final Color primaryOpaque;
+
+  const FluentxStrokeCardColors({
+    required this.primaryTransparent,
+    required this.primaryOpaque,
+  });
+
+  static const dark = FluentxStrokeCardColors(
+    primaryTransparent: Color(0x19000000),
+    primaryOpaque: Color(0xff1c1c1c),
+  );
+
+  static const light = FluentxStrokeCardColors(
+    primaryTransparent: Color(0x0f000000),
+    primaryOpaque: Color(0xffebebeb),
+  );
+}
+
+class FluentxStrokeSurfaceColors {
+  final Color primary;
+  final Color snapped;
+  final Color flyout;
+
+  const FluentxStrokeSurfaceColors({
+    required this.primary,
+    required this.snapped,
+    required this.flyout,
+  });
+
+  static const dark = FluentxStrokeSurfaceColors(
+    primary: Color(0x66757575),
+    snapped: Color(0xff757575),
+    flyout: Color(0x33000000),
+  );
+
+  static const light = FluentxStrokeSurfaceColors(
+    primary: Color(0x66757575),
+    snapped: Color(0xff757575),
+    flyout: Color(0x0f000000),
+  );
+}
+
+class FluentxStrokeDividerColors {
+  final Color primary;
+
+  const FluentxStrokeDividerColors({required this.primary});
+
+  static const dark = FluentxStrokeDividerColors(primary: Color(0x15ffffff));
+  static const light = FluentxStrokeDividerColors(primary: Color(0x0f000000));
+}
+
+class FluentxStrokeFocusColors {
+  final Color outer;
+  final Color inner;
+
+  const FluentxStrokeFocusColors({required this.outer, required this.inner});
+
+  static const dark = FluentxStrokeFocusColors(
+    outer: Color(0xffffffff),
+    inner: Color(0xb3000000),
+  );
+
+  static const light = FluentxStrokeFocusColors(
+    outer: Color(0xe4000000),
+    inner: Color(0xb3ffffff),
   );
 }

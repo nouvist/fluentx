@@ -39,19 +39,19 @@ class _MyAppState extends State<MyApp> {
             ColorTile(
               title: Text("Text"),
               children: [
-                ColorPreview(c.text.primary),
-                ColorPreview(c.text.secondary),
-                ColorPreview(c.text.tertiary),
-                ColorPreview(c.text.disabled),
+                ColorPreview(c.foreground.primary),
+                ColorPreview(c.foreground.secondary),
+                ColorPreview(c.foreground.tertiary),
+                ColorPreview(c.foreground.disabled),
               ],
             ),
             ColorTile(
               title: Text("Text Accent"),
               children: [
-                ColorPreview(c.textAccent.primary),
-                ColorPreview(c.textAccent.secondary),
-                ColorPreview(c.textAccent.tertiary),
-                ColorPreview(c.textAccent.disabled),
+                ColorPreview(c.foregroundAccent.primary),
+                ColorPreview(c.foregroundAccent.secondary),
+                ColorPreview(c.foregroundAccent.tertiary),
+                ColorPreview(c.foregroundAccent.disabled),
               ],
             ),
           ],
@@ -74,7 +74,7 @@ class ColorTile extends StatelessWidget {
       children: [
         Expanded(
           child: DefaultTextStyle.merge(
-            style: .new(color: c.text.primary),
+            style: .new(color: c.foreground.primary),
             child: title,
           ),
         ),
