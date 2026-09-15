@@ -1,6 +1,5 @@
-import 'dart:ui';
-
 import 'package:fluentx/src/rust/foundations/colors.dart';
+import 'package:flutter/services.dart';
 
 part 'colors_namespace.dart';
 part 'colors_implementation.dart';

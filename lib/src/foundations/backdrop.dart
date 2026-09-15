@@ -1,4 +1,4 @@
-import 'package:fluentx/src/rust/foundations/backdrop.dart';
+import 'package:fluentx/src/rust/foundations/window.dart';
 
 enum FluentxBackdropVariant { none, mica, tabbed }
 
@@ -7,7 +7,7 @@ abstract final class FluentxBackdrop {
   static var _isNative = null as bool?;
 
   static bool isNative() {
-    return _isNative ??= FluentxNativeBackdrop.isNative();
+    return _isNative ??= FluentxNativeWindow.isNative();
   }
 
   static FluentxBackdropVariant current() {
@@ -25,16 +25,16 @@ abstract final class FluentxBackdrop {
   }
 
   static void _apply([FluentxBackdropVariant? variant]) {
-    FluentxNativeBackdrop.extend();
+    FluentxNativeWindow.extend();
     switch (variant ?? current()) {
       case FluentxBackdropVariant.none:
-        FluentxNativeBackdrop.none();
+        FluentxNativeWindow.none();
         break;
       case FluentxBackdropVariant.mica:
-        FluentxNativeBackdrop.mica();
+        FluentxNativeWindow.mica();
         break;
       case FluentxBackdropVariant.tabbed:
-        FluentxNativeBackdrop.tabbed();
+        FluentxNativeWindow.tabbed();
         break;
     }
   }
