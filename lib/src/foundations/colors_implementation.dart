@@ -564,3 +564,63 @@ class FluentxBackgroundSolidColors {
     senary: Color(0xffffffff),
   );
 }
+
+class FluentxSystemItemColors {
+  final Color foreground;
+  final Color background;
+
+  const FluentxSystemItemColors({
+    required this.foreground,
+    required this.background,
+  });
+
+  static const attentionDark = FluentxSystemItemColors(
+    foreground: Color(0xff60cdff),
+    background: Color(0xff2e2e2e),
+  );
+  static const successDark = FluentxSystemItemColors(
+    foreground: Color(0xff6ccb5f),
+    background: Color(0xff393d1b),
+  );
+  static const cautionDark = FluentxSystemItemColors(
+    foreground: Color(0xfffce100),
+    background: Color(0xff433519),
+  );
+  static const criticalDark = FluentxSystemItemColors(
+    foreground: Color(0xffff99a4),
+    background: Color(0xff442726),
+  );
+  static const neutralDark = FluentxSystemItemColors(
+    foreground: Color(0x8bffffff),
+    background: Color(0x08ffffff),
+  );
+  static const neutralSolidDark = FluentxSystemItemColors(
+    foreground: Color(0xff9d9d9d),
+    background: Color(0xff2e2e2e),
+  );
+
+  static const attentionLight = FluentxSystemItemColors(
+    foreground: Color(0xff0070cb),
+    background: Color(0xfff7f7f7),
+  );
+  static const successLight = FluentxSystemItemColors(
+    foreground: Color(0xff0f7b0f),
+    background: Color(0xffdff6dd),
+  );
+  static const cautionLight = FluentxSystemItemColors(
+    foreground: Color(0xff9d5d00),
+    background: Color(0xfffff4ce),
+  );
+  static const criticalLight = FluentxSystemItemColors(
+    foreground: Color(0xffc42b1c),
+    background: Color(0xfffde7e9),
+  );
+  static const neutralLight = FluentxSystemItemColors(
+    foreground: Color(0x72000000),
+    background: Color(0x06000000),
+  );
+  static const neutralSolidLight = FluentxSystemItemColors(
+    foreground: Color(0xff8a8a8a),
+    background: Color(0xfff3f3f3),
+  );
+}

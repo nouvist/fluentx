@@ -12,6 +12,7 @@ class FluentxColors {
   final FluentxControlColors control;
   final FluentxStrokeColors stroke;
   final FluentxBackgroundColors background;
+  final FluentxSystemColors system;
 
   const FluentxColors({
     required this.brightness,
@@ -20,6 +21,7 @@ class FluentxColors {
     required this.control,
     required this.stroke,
     required this.background,
+    required this.system,
   });
 
   factory FluentxColors.current() {
@@ -38,6 +40,7 @@ class FluentxColors {
     control: .dark,
     stroke: .dark,
     background: .dark,
+    system: .dark,
   );
 
   factory FluentxColors.light(FluentxAccentColors accent) => .new(
@@ -47,5 +50,6 @@ class FluentxColors {
     control: .light,
     stroke: .light,
     background: .light,
+    system: .light,
   );
 }

@@ -113,3 +113,39 @@ class FluentxBackgroundColors {
     solid: .light,
   );
 }
+
+class FluentxSystemColors {
+  final FluentxSystemItemColors attention;
+  final FluentxSystemItemColors success;
+  final FluentxSystemItemColors caution;
+  final FluentxSystemItemColors critical;
+  final FluentxSystemItemColors neutral;
+  final FluentxSystemItemColors neutralSolid;
+
+  const FluentxSystemColors({
+    required this.attention,
+    required this.success,
+    required this.caution,
+    required this.critical,
+    required this.neutral,
+    required this.neutralSolid,
+  });
+
+  static const dark = FluentxSystemColors(
+    attention: .attentionDark,
+    success: .successDark,
+    caution: .cautionDark,
+    critical: .criticalDark,
+    neutral: .neutralDark,
+    neutralSolid: .neutralSolidDark,
+  );
+
+  static const light = FluentxSystemColors(
+    attention: .attentionLight,
+    success: .successLight,
+    caution: .cautionLight,
+    critical: .criticalLight,
+    neutral: .neutralLight,
+    neutralSolid: .neutralSolidLight,
+  );
+}
