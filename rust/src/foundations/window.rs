@@ -10,15 +10,32 @@ use std::{
 use flutter_rust_bridge::{frb, DartFnFuture};
 use tokio::sync::RwLock;
 use windows::{
+    core::{BOOL, HSTRING},
     Win32::{
-        Foundation::{FALSE, HWND, LPARAM, LRESULT, TRUE, WPARAM}, Graphics::Dwm::{
-            DWM_SYSTEMBACKDROP_TYPE, DWM_WINDOW_CORNER_PREFERENCE, DWMSBT_MAINWINDOW, DWMSBT_NONE, DWMSBT_TABBEDWINDOW, DWMWA_SYSTEMBACKDROP_TYPE, DWMWA_USE_IMMERSIVE_DARK_MODE, DWMWA_WINDOW_CORNER_PREFERENCE, DWMWCP_ROUND, DwmExtendFrameIntoClientArea, DwmSetWindowAttribute,
-        }, System::Threading::GetCurrentProcessId, UI::{
-            Controls::MARGINS, Shell::{DefSubclassProc, SetWindowSubclass}, WindowsAndMessaging::{
-                EnumChildWindows, EnumWindows, GWL_STYLE, GetClassNameW, GetWindowLongPtrW, GetWindowThreadProcessId, HTCAPTION, HTTRANSPARENT, SWP_DRAWFRAME, SWP_FRAMECHANGED, SWP_NOMOVE, SWP_NOOWNERZORDER, SWP_NOSIZE, SWP_NOZORDER, SetWindowLongPtrW, SetWindowPos, WM_NCCALCSIZE, WM_NCHITTEST, WM_SETTINGCHANGE, WS_SYSMENU,
+        Foundation::{FALSE, HWND, LPARAM, LRESULT, POINT, RECT, TRUE, WPARAM},
+        Graphics::{
+            Dwm::{
+                DwmExtendFrameIntoClientArea, DwmSetWindowAttribute, DWMSBT_MAINWINDOW,
+                DWMSBT_NONE, DWMSBT_TABBEDWINDOW, DWMWA_SYSTEMBACKDROP_TYPE,
+                DWMWA_USE_IMMERSIVE_DARK_MODE, DWMWA_WINDOW_CORNER_PREFERENCE, DWMWCP_ROUND,
+                DWM_SYSTEMBACKDROP_TYPE, DWM_WINDOW_CORNER_PREFERENCE,
+            },
+            Gdi::ScreenToClient,
+        },
+        System::Threading::GetCurrentProcessId,
+        UI::{
+            Controls::MARGINS,
+            Shell::{DefSubclassProc, SetWindowSubclass},
+            WindowsAndMessaging::{
+                EnumChildWindows, EnumWindows, GetClassNameW, GetCursorPos, GetSystemMetrics,
+                GetWindowLongPtrW, GetWindowRect, GetWindowThreadProcessId, SetWindowLongPtrW,
+                SetWindowPos, GWL_STYLE, HTBOTTOM, HTBOTTOMLEFT, HTBOTTOMRIGHT, HTCAPTION, HTLEFT,
+                HTRIGHT, HTTOP, HTTOPLEFT, HTTOPRIGHT, HTTRANSPARENT, SM_CXSIZEFRAME,
+                SWP_DRAWFRAME, SWP_FRAMECHANGED, SWP_NOMOVE, SWP_NOOWNERZORDER, SWP_NOSIZE,
+                SWP_NOZORDER, WM_NCCALCSIZE, WM_NCHITTEST, WM_SETTINGCHANGE, WS_SYSMENU,
             },
         },
-    }, core::{BOOL, HSTRING},
+    },
 };
 
 use crate::foundations::colors::FluentxNativeBrightness;
@@ -213,6 +230,38 @@ impl FluentxNativeWindow {
         } else if umsg == WM_NCCALCSIZE {
             return LRESULT(0);
         } else if umsg == WM_NCHITTEST {
+            let mut cursor = POINT::default();
+            let mut rect = RECT::default();
+            let threshold = GetSystemMetrics(SM_CXSIZEFRAME);
+            _ = GetCursorPos(&mut cursor as *mut _);
+            _ = ScreenToClient(hwnd, &mut cursor as *mut _);
+            _ = GetWindowRect(hwnd, &mut rect as *mut _);
+
+            let is_top = cursor.y <= threshold;
+            let is_bottom = cursor.y >= rect.bottom - rect.top - threshold;
+            let is_left = cursor.x <= threshold;
+            let is_right = cursor.x >= rect.right - rect.left - threshold;
+
+            if is_top {
+                if is_left {
+                    return LRESULT(HTTOPLEFT as _);
+                } else if is_right {
+                    return LRESULT(HTTOPRIGHT as _);
+                }
+                return LRESULT(HTTOP as _);
+            } else if is_bottom {
+                if is_left {
+                    return LRESULT(HTBOTTOMLEFT as _);
+                } else if is_right {
+                    return LRESULT(HTBOTTOMRIGHT as _);
+                }
+                return LRESULT(HTBOTTOM as _);
+            } else if is_left {
+                return LRESULT(HTLEFT as _);
+            } else if is_right {
+                return LRESULT(HTRIGHT as _);
+            }
+
             return LRESULT(HTCAPTION as _);
         }
 
