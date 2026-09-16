@@ -37,6 +37,7 @@ class _MyAppState extends State<MyApp> {
         body: ListView(
           padding: .all(32),
           children: [
+            Center(child: FxTitlebarControl()),
             ColorTile(
               title: Text("Brightness"),
               children: [

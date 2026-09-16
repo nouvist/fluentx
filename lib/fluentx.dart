@@ -13,6 +13,7 @@ abstract final class Fluentx {
   static Future<void> init() async {
     WidgetsFlutterBinding.ensureInitialized();
     await RustLib.init();
+    FxNativeWindow.instance().init();
     FxNativeWindow.instance().refresh();
   }
 }

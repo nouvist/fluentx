@@ -1,5 +1,5 @@
 name: fluentx
-description: "A new Dart FFI package project."
+description: "Yet another Flutter implementation of Fluent UI."
 version: 0.0.1
 
 environment:
@@ -13,6 +13,7 @@ dependencies:
   flutter_rust_bridge_hooks: 2.13.0
   hooks: ^2.0.0
   logging: ^1.3.0
+  flutter_svg: ^2.3.0
 
 dev_dependencies:
   ffi: ^2.1.4

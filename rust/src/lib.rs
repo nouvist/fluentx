@@ -8,6 +8,7 @@ mod frb_generated;
 
 pub mod foundations {
     pub mod colors;
+    pub mod event;
     pub mod window;
 }
 

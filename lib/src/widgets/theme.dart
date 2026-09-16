@@ -20,35 +20,29 @@ class FxTheme extends StatefulWidget {
   State<FxTheme> createState() => _FxThemeState();
 }
 
-class _FxThemeState extends State<FxTheme>
-    implements FluentxThemeData {
+class _FxThemeState extends State<FxTheme> implements FluentxThemeData {
   @override
   late FxColors colors;
 
+  late int _listener;
   var _key = UniqueKey();
-  var _listener = null as FxNativeWindowListener?;
   var _timer = null as Timer?;
 
   @override
   void initState() {
     super.initState();
     colors = .current();
-    yieldNow(() async {
-      _listener = await FxNativeWindow.instance().listen(
-        callback: _handleRefresh,
-      );
-    });
+    _listener = FxNativeWindow.instance().addListener(callback: _handleRefresh);
   }
 
   @override
   void dispose() {
+    FxNativeWindow.instance().removeListener(id: _listener);
     super.dispose();
-    if (_listener case final it?) {
-      FxNativeWindow.instance().cancel(listener: it);
-    }
   }
 
-  void _handleRefresh() async {
+  void _handleRefresh(FxNativeWindowEvent event) async {
+    if (event != .settings) return;
     _timer?.cancel();
     _timer = .new(.new(milliseconds: 100), () async {
       await yieldNow();
