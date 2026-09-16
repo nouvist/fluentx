@@ -32,12 +32,12 @@ class _MyAppState extends State<MyApp> {
     final c = FxTheme.of(context).colors;
 
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
         backgroundColor: Colors.transparent,
         body: ListView(
-          padding: .all(32),
           children: [
-            Center(child: FxTitlebarControl()),
+            Align(alignment: .topRight, child: FxTitlebarControl()),
             ColorTile(
               title: Text("Brightness"),
               children: [

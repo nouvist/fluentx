@@ -27,8 +27,8 @@ use windows::{
                 GetWindowRect, GetWindowThreadProcessId, SetWindowLongPtrW, SetWindowPos,
                 ShowWindow, GWL_STYLE, HTBOTTOM, HTBOTTOMLEFT, HTBOTTOMRIGHT, HTCLIENT, HTCLOSE,
                 HTLEFT, HTMAXBUTTON, HTMINBUTTON, HTRIGHT, HTTOP, HTTOPLEFT, HTTOPRIGHT,
-                HTTRANSPARENT, SM_CXSIZEFRAME, SWP_FRAMECHANGED, SWP_NOMOVE, SWP_NOSIZE,
-                SWP_NOZORDER, SW_MAXIMIZE, SW_MINIMIZE, SW_RESTORE, TITLEBARINFOEX,
+                HTTRANSPARENT, NCCALCSIZE_PARAMS, SM_CXSIZEFRAME, SWP_FRAMECHANGED, SWP_NOMOVE,
+                SWP_NOSIZE, SWP_NOZORDER, SW_MAXIMIZE, SW_MINIMIZE, SW_RESTORE, TITLEBARINFOEX,
                 WINDOWPLACEMENT, WM_ACTIVATE, WM_GETTITLEBARINFOEX, WM_NCCALCSIZE, WM_NCHITTEST,
                 WM_NCLBUTTONDOWN, WM_NCLBUTTONUP, WM_SETTINGCHANGE, WM_SIZE, WS_SYSMENU,
             },
@@ -307,11 +307,6 @@ impl FxNativeWindow {
         _ = ScreenToClient(self.root_hwnd(), &mut cursor as *mut _);
         _ = GetWindowRect(self.root_hwnd(), &mut rect as *mut _);
 
-        let is_top = cursor.y <= threshold;
-        let is_bottom = cursor.y >= rect.bottom - rect.top - threshold;
-        let is_left = cursor.x <= threshold;
-        let is_right = cursor.x >= rect.right - rect.left - threshold;
-
         let cache = |param: u32| {
             *self.0.hit_ptr = param;
             let next = FxNativeWindowHitEvent::from(param);
@@ -321,34 +316,41 @@ impl FxNativeWindow {
             }
         };
 
-        if is_top {
-            if is_left {
-                cache(HTTOPLEFT);
+        if !self.is_maximized() {
+            let is_top = cursor.y <= threshold;
+            let is_bottom = cursor.y >= rect.bottom - rect.top - threshold - 8;
+            let is_left = cursor.x <= threshold;
+            let is_right = cursor.x >= rect.right - rect.left - threshold - 16;
+
+            if is_top {
+                if is_left {
+                    cache(HTTOPLEFT);
+                    return;
+                } else if is_right {
+                    cache(HTTOPRIGHT);
+                    return;
+                } else {
+                    cache(HTTOP);
+                    return;
+                }
+            } else if is_bottom {
+                if is_left {
+                    cache(HTBOTTOMLEFT);
+                    return;
+                } else if is_right {
+                    cache(HTBOTTOMRIGHT);
+                    return;
+                } else {
+                    cache(HTBOTTOM);
+                    return;
+                }
+            } else if is_left {
+                cache(HTLEFT);
                 return;
             } else if is_right {
-                cache(HTTOPRIGHT);
-                return;
-            } else {
-                cache(HTTOP);
+                cache(HTRIGHT);
                 return;
             }
-        } else if is_bottom {
-            if is_left {
-                cache(HTBOTTOMLEFT);
-                return;
-            } else if is_right {
-                cache(HTBOTTOMRIGHT);
-                return;
-            } else {
-                cache(HTBOTTOM);
-                return;
-            }
-        } else if is_left {
-            cache(HTLEFT);
-            return;
-        } else if is_right {
-            cache(HTRIGHT);
-            return;
         }
 
         if self.0.close_rect.blocking_read().test(cursor) {
@@ -396,6 +398,18 @@ impl FxNativeWindow {
             let it = it!(dwrefdata);
             it.0.listeners.invoke(FxNativeWindowEvent::Foreground);
         } else if umsg == WM_NCCALCSIZE {
+            let it = it!(dwrefdata);
+            let size = lparam.0 as *mut c_void as *mut NCCALCSIZE_PARAMS;
+            let size = &mut *size;
+
+            size.rgrc[0].left += 8;
+            size.rgrc[0].right -= 8;
+            size.rgrc[0].bottom -= 8;
+            size.rgrc[0].top += match it.is_maximized() {
+                true => 8,
+                false => 0,
+            };
+
             return LRESULT(0);
         } else if umsg == WM_GETTITLEBARINFOEX {
             let it = it!(dwrefdata);
