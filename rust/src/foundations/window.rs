@@ -1,4 +1,5 @@
 use std::{
+    alloc::{alloc, dealloc, Layout},
     ffi::c_void,
     mem,
     sync::{
@@ -29,10 +30,11 @@ use windows::{
             WindowsAndMessaging::{
                 EnumChildWindows, EnumWindows, GetClassNameW, GetCursorPos, GetSystemMetrics,
                 GetWindowLongPtrW, GetWindowRect, GetWindowThreadProcessId, SetWindowLongPtrW,
-                SetWindowPos, GWL_STYLE, HTBOTTOM, HTBOTTOMLEFT, HTBOTTOMRIGHT, HTCAPTION, HTLEFT,
-                HTRIGHT, HTTOP, HTTOPLEFT, HTTOPRIGHT, HTTRANSPARENT, SM_CXSIZEFRAME,
-                SWP_DRAWFRAME, SWP_FRAMECHANGED, SWP_NOMOVE, SWP_NOOWNERZORDER, SWP_NOSIZE,
-                SWP_NOZORDER, WM_NCCALCSIZE, WM_NCHITTEST, WM_SETTINGCHANGE, WS_SYSMENU,
+                SetWindowPos, GWL_STYLE, HTBOTTOM, HTBOTTOMLEFT, HTBOTTOMRIGHT, HTCAPTION,
+                HTCLIENT, HTLEFT, HTRIGHT, HTTOP, HTTOPLEFT, HTTOPRIGHT, HTTRANSPARENT,
+                SM_CXSIZEFRAME, SWP_DRAWFRAME, SWP_FRAMECHANGED, SWP_NOMOVE, SWP_NOOWNERZORDER,
+                SWP_NOSIZE, SWP_NOZORDER, WM_NCCALCSIZE, WM_NCHITTEST, WM_SETTINGCHANGE,
+                WS_SYSMENU,
             },
         },
     },
@@ -40,16 +42,28 @@ use windows::{
 
 use crate::foundations::colors::FluentxNativeBrightness;
 
+const LAYOUT_U32: Layout = Layout::new::<LRESULT>();
+
 struct FluentxNativeWindowInner {
     next: AtomicU64,
-    root_hwnd: usize,
-    flutter_hwnd: usize,
+    root_hwnd: HWND,
+    flutter_hwnd: HWND,
+    hittest_ptr: *mut u32,
     listeners: RwLock<
         Vec<(
             u64,
             Box<dyn Fn() -> DartFnFuture<()> + Send + Sync + 'static>,
         )>,
     >,
+}
+
+unsafe impl Send for FluentxNativeWindowInner {}
+unsafe impl Sync for FluentxNativeWindowInner {}
+
+impl Drop for FluentxNativeWindowInner {
+    fn drop(&mut self) {
+        unsafe { dealloc(self.hittest_ptr as *mut u8, LAYOUT_U32) };
+    }
 }
 
 macro_rules! it {
@@ -139,9 +153,10 @@ impl FluentxNativeWindow {
 
         unsafe {
             let it = Self(Arc::new(FluentxNativeWindowInner {
+                root_hwnd,
+                flutter_hwnd,
+                hittest_ptr: alloc(LAYOUT_U32) as *mut _,
                 next: AtomicU64::new(0),
-                root_hwnd: root_hwnd.0 as usize,
-                flutter_hwnd: flutter_hwnd.0 as usize,
                 listeners: RwLock::new(Vec::new()),
             }));
 
@@ -175,14 +190,16 @@ impl FluentxNativeWindow {
         }
     }
 
+    #[inline]
     #[frb(ignore)]
     pub fn root_hwnd(&self) -> HWND {
-        HWND(self.0.root_hwnd as *mut _)
+        self.0.root_hwnd
     }
 
+    #[inline]
     #[frb(ignore)]
     pub fn flutter_hwnd(&self) -> HWND {
-        HWND(self.0.flutter_hwnd as *mut _)
+        self.0.flutter_hwnd
     }
 
     #[frb(sync)]
@@ -196,6 +213,49 @@ impl FluentxNativeWindow {
                 | SWP_DRAWFRAME;
             _ = SetWindowPos(self.root_hwnd(), None, 0, 0, 0, 0, swp);
         }
+    }
+
+    unsafe fn handle_hittest(&self) {
+        let mut cursor = POINT::default();
+        let mut rect = RECT::default();
+        let threshold = GetSystemMetrics(SM_CXSIZEFRAME);
+        _ = GetCursorPos(&mut cursor as *mut _);
+        _ = ScreenToClient(self.root_hwnd(), &mut cursor as *mut _);
+        _ = GetWindowRect(self.root_hwnd(), &mut rect as *mut _);
+
+        let is_top = cursor.y <= threshold;
+        let is_bottom = cursor.y >= rect.bottom - rect.top - threshold;
+        let is_left = cursor.x <= threshold;
+        let is_right = cursor.x >= rect.right - rect.left - threshold;
+
+        macro_rules! cache {
+            ($param:ident) => {
+                *self.0.hittest_ptr = $param;
+                return
+            };
+        }
+
+        if is_top {
+            if is_left {
+                cache!(HTTOPLEFT);
+            } else if is_right {
+                cache!(HTTOPRIGHT);
+            }
+            cache!(HTTOP);
+        } else if is_bottom {
+            if is_left {
+                cache!(HTBOTTOMLEFT);
+            } else if is_right {
+                cache!(HTBOTTOMRIGHT);
+            }
+            cache!(HTBOTTOM);
+        } else if is_left {
+            cache!(HTLEFT);
+        } else if is_right {
+            cache!(HTRIGHT);
+        }
+
+        cache!(HTCLIENT);
     }
 
     unsafe extern "system" fn handle_root(
@@ -230,39 +290,8 @@ impl FluentxNativeWindow {
         } else if umsg == WM_NCCALCSIZE {
             return LRESULT(0);
         } else if umsg == WM_NCHITTEST {
-            let mut cursor = POINT::default();
-            let mut rect = RECT::default();
-            let threshold = GetSystemMetrics(SM_CXSIZEFRAME);
-            _ = GetCursorPos(&mut cursor as *mut _);
-            _ = ScreenToClient(hwnd, &mut cursor as *mut _);
-            _ = GetWindowRect(hwnd, &mut rect as *mut _);
-
-            let is_top = cursor.y <= threshold;
-            let is_bottom = cursor.y >= rect.bottom - rect.top - threshold;
-            let is_left = cursor.x <= threshold;
-            let is_right = cursor.x >= rect.right - rect.left - threshold;
-
-            if is_top {
-                if is_left {
-                    return LRESULT(HTTOPLEFT as _);
-                } else if is_right {
-                    return LRESULT(HTTOPRIGHT as _);
-                }
-                return LRESULT(HTTOP as _);
-            } else if is_bottom {
-                if is_left {
-                    return LRESULT(HTBOTTOMLEFT as _);
-                } else if is_right {
-                    return LRESULT(HTBOTTOMRIGHT as _);
-                }
-                return LRESULT(HTBOTTOM as _);
-            } else if is_left {
-                return LRESULT(HTLEFT as _);
-            } else if is_right {
-                return LRESULT(HTRIGHT as _);
-            }
-
-            return LRESULT(HTCAPTION as _);
+            let it = it!(dwrefdata);
+            return LRESULT(*it.0.hittest_ptr as _);
         }
 
         DefSubclassProc(hwnd, umsg, wparam, lparam)
@@ -274,10 +303,16 @@ impl FluentxNativeWindow {
         wparam: WPARAM,
         lparam: LPARAM,
         _uidsubclass: usize,
-        _dwrefdata: usize,
+        dwrefdata: usize,
     ) -> LRESULT {
         if umsg == WM_NCHITTEST {
-            return LRESULT(HTTRANSPARENT as _);
+            let it = it!(dwrefdata);
+            it.handle_hittest();
+            if *it.0.hittest_ptr == HTCLIENT {
+                return LRESULT(HTCLIENT as _);
+            } else {
+                return LRESULT(HTTRANSPARENT as _);
+            }
         }
         DefSubclassProc(hwnd, umsg, wparam, lparam)
     }
