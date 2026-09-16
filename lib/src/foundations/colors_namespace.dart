@@ -1,32 +1,32 @@
 part of 'colors.dart';
 
-class FluentxForegroundColors {
-  final FluentxForegroundPrimaryColors primary;
-  final FluentxForegroundAccentColors accent;
-  final FluentxForegroundOnAccentColors onAccent;
+class FxForegroundColors {
+  final FxForegroundPrimaryColors primary;
+  final FxForegroundAccentColors accent;
+  final FxForegroundOnAccentColors onAccent;
 
-  const FluentxForegroundColors({
+  const FxForegroundColors({
     required this.primary,
     required this.accent,
     required this.onAccent,
   });
 
-  factory FluentxForegroundColors.dark(FluentxAccentColors accent) =>
+  factory FxForegroundColors.dark(FxAccentColors accent) =>
       .new(primary: .dark, accent: .dark(accent), onAccent: .dark);
 
-  factory FluentxForegroundColors.light(FluentxAccentColors accent) =>
+  factory FxForegroundColors.light(FxAccentColors accent) =>
       .new(primary: .light, accent: .light(accent), onAccent: .light);
 }
 
-class FluentxControlColors {
-  final FluentxControlPrimaryColors primary;
-  final FluentxControlSecondaryColors secondary;
-  final FluentxControlSolidColors solid;
-  final FluentxControlStrongColors strong;
-  final FluentxControlSubtleColors subtle;
-  final FluentxControlOnImageColors onImage;
+class FxControlColors {
+  final FxControlPrimaryColors primary;
+  final FxControlSecondaryColors secondary;
+  final FxControlSolidColors solid;
+  final FxControlStrongColors strong;
+  final FxControlSubtleColors subtle;
+  final FxControlOnImageColors onImage;
 
-  const FluentxControlColors({
+  const FxControlColors({
     required this.primary,
     required this.secondary,
     required this.solid,
@@ -35,7 +35,7 @@ class FluentxControlColors {
     required this.onImage,
   });
 
-  static const dark = FluentxControlColors(
+  static const dark = FxControlColors(
     primary: .dark,
     secondary: .dark,
     solid: .dark,
@@ -44,7 +44,7 @@ class FluentxControlColors {
     onImage: .dark,
   );
 
-  static const light = FluentxControlColors(
+  static const light = FxControlColors(
     primary: .light,
     secondary: .light,
     solid: .light,
@@ -54,14 +54,14 @@ class FluentxControlColors {
   );
 }
 
-class FluentxStrokeColors {
-  final FluentxStrokeControlColors control;
-  final FluentxStrokeCardColors card;
-  final FluentxStrokeSurfaceColors surface;
-  final FluentxStrokeDividerColors divider;
-  final FluentxStrokeFocusColors focus;
+class FxStrokeColors {
+  final FxStrokeControlColors control;
+  final FxStrokeCardColors card;
+  final FxStrokeSurfaceColors surface;
+  final FxStrokeDividerColors divider;
+  final FxStrokeFocusColors focus;
 
-  const FluentxStrokeColors({
+  const FxStrokeColors({
     required this.control,
     required this.card,
     required this.surface,
@@ -69,7 +69,7 @@ class FluentxStrokeColors {
     required this.focus,
   });
 
-  static const dark = FluentxStrokeColors(
+  static const dark = FxStrokeColors(
     control: .dark,
     card: .dark,
     surface: .dark,
@@ -77,7 +77,7 @@ class FluentxStrokeColors {
     focus: .dark,
   );
 
-  static const light = FluentxStrokeColors(
+  static const light = FxStrokeColors(
     control: .light,
     card: .light,
     surface: .light,
@@ -86,27 +86,27 @@ class FluentxStrokeColors {
   );
 }
 
-class FluentxBackgroundColors {
-  final FluentxBackgroundCardColors card;
-  final FluentxBackgroundSmokeColors smoke;
-  final FluentxBackgroundLayerColors layer;
-  final FluentxBackgroundSolidColors solid;
+class FxBackgroundColors {
+  final FxBackgroundCardColors card;
+  final FxBackgroundSmokeColors smoke;
+  final FxBackgroundLayerColors layer;
+  final FxBackgroundSolidColors solid;
 
-  const FluentxBackgroundColors({
+  const FxBackgroundColors({
     required this.card,
     required this.smoke,
     required this.layer,
     required this.solid,
   });
 
-  static const dark = FluentxBackgroundColors(
+  static const dark = FxBackgroundColors(
     card: .dark,
     smoke: .dark,
     layer: .dark,
     solid: .dark,
   );
 
-  static const light = FluentxBackgroundColors(
+  static const light = FxBackgroundColors(
     card: .light,
     smoke: .light,
     layer: .light,
@@ -114,15 +114,15 @@ class FluentxBackgroundColors {
   );
 }
 
-class FluentxSystemColors {
-  final FluentxSystemItemColors attention;
-  final FluentxSystemItemColors success;
-  final FluentxSystemItemColors caution;
-  final FluentxSystemItemColors critical;
-  final FluentxSystemItemColors neutral;
-  final FluentxSystemItemColors neutralSolid;
+class FxSystemColors {
+  final FxSystemItemColors attention;
+  final FxSystemItemColors success;
+  final FxSystemItemColors caution;
+  final FxSystemItemColors critical;
+  final FxSystemItemColors neutral;
+  final FxSystemItemColors neutralSolid;
 
-  const FluentxSystemColors({
+  const FxSystemColors({
     required this.attention,
     required this.success,
     required this.caution,
@@ -131,7 +131,7 @@ class FluentxSystemColors {
     required this.neutralSolid,
   });
 
-  static const dark = FluentxSystemColors(
+  static const dark = FxSystemColors(
     attention: .attentionDark,
     success: .successDark,
     caution: .cautionDark,
@@ -140,7 +140,7 @@ class FluentxSystemColors {
     neutralSolid: .neutralSolidDark,
   );
 
-  static const light = FluentxSystemColors(
+  static const light = FxSystemColors(
     attention: .attentionLight,
     success: .successLight,
     caution: .cautionLight,

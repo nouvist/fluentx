@@ -3,10 +3,10 @@ import 'dart:async';
 import 'package:fluentx/fluentx.dart';
 import 'package:fluentx/src/rust/foundations/window.dart';
 
-class FluentxTheme extends StatefulWidget {
+class FxTheme extends StatefulWidget {
   final Widget child;
 
-  const FluentxTheme({super.key, required this.child});
+  const FxTheme({super.key, required this.child});
 
   static FluentxThemeData? maybeOf(BuildContext context) {
     return context.dependOnInheritedWidgetOfExactType<_Inherited>()?.data;
@@ -17,16 +17,16 @@ class FluentxTheme extends StatefulWidget {
   }
 
   @override
-  State<FluentxTheme> createState() => _FluentxThemeState();
+  State<FxTheme> createState() => _FxThemeState();
 }
 
-class _FluentxThemeState extends State<FluentxTheme>
+class _FxThemeState extends State<FxTheme>
     implements FluentxThemeData {
   @override
-  late FluentxColors colors;
+  late FxColors colors;
 
   var _key = UniqueKey();
-  var _listener = null as FluentxNativeWindowListener?;
+  var _listener = null as FxNativeWindowListener?;
   var _timer = null as Timer?;
 
   @override
@@ -34,7 +34,7 @@ class _FluentxThemeState extends State<FluentxTheme>
     super.initState();
     colors = .current();
     yieldNow(() async {
-      _listener = await FluentxNativeWindow.instance().listen(
+      _listener = await FxNativeWindow.instance().listen(
         callback: _handleRefresh,
       );
     });
@@ -44,7 +44,7 @@ class _FluentxThemeState extends State<FluentxTheme>
   void dispose() {
     super.dispose();
     if (_listener case final it?) {
-      FluentxNativeWindow.instance().cancel(listener: it);
+      FxNativeWindow.instance().cancel(listener: it);
     }
   }
 
@@ -67,7 +67,7 @@ class _FluentxThemeState extends State<FluentxTheme>
 }
 
 abstract class FluentxThemeData {
-  FluentxColors get colors;
+  FxColors get colors;
 }
 
 class _Inherited extends InheritedWidget {

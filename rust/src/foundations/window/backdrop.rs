@@ -1,6 +1,6 @@
 use flutter_rust_bridge::frb;
 
-pub trait FluentxNativeWindowBackdrop {
+pub trait FxNativeWindowBackdrop {
     #[frb(sync)]
     fn extend(&self);
 

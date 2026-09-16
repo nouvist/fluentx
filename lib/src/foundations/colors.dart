@@ -4,16 +4,16 @@ import 'package:flutter/services.dart';
 part 'colors_namespace.dart';
 part 'colors_implementation.dart';
 
-class FluentxColors {
+class FxColors {
   final Brightness brightness;
-  final FluentxAccentColors accent;
-  final FluentxForegroundColors foreground;
-  final FluentxControlColors control;
-  final FluentxStrokeColors stroke;
-  final FluentxBackgroundColors background;
-  final FluentxSystemColors system;
+  final FxAccentColors accent;
+  final FxForegroundColors foreground;
+  final FxControlColors control;
+  final FxStrokeColors stroke;
+  final FxBackgroundColors background;
+  final FxSystemColors system;
 
-  const FluentxColors({
+  const FxColors({
     required this.brightness,
     required this.accent,
     required this.foreground,
@@ -23,8 +23,8 @@ class FluentxColors {
     required this.system,
   });
 
-  factory FluentxColors.current() {
-    final native = FluentxNativeBrightness.current();
+  factory FxColors.current() {
+    final native = FxNativeBrightness.current();
     if (native == null) return .light(.current());
     return switch (native) {
       .dark => .dark(.current()),
@@ -32,7 +32,7 @@ class FluentxColors {
     };
   }
 
-  factory FluentxColors.dark(FluentxAccentColors accent) => .new(
+  factory FxColors.dark(FxAccentColors accent) => .new(
     brightness: .dark,
     accent: accent,
     foreground: .dark(accent),
@@ -42,7 +42,7 @@ class FluentxColors {
     system: .dark,
   );
 
-  factory FluentxColors.light(FluentxAccentColors accent) => .new(
+  factory FxColors.light(FxAccentColors accent) => .new(
     brightness: .light,
     accent: accent,
     foreground: .light(accent),

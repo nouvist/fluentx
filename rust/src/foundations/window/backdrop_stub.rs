@@ -1,6 +1,6 @@
-use crate::foundations::window::{backdrop::FluentxNativeWindowBackdrop, FluentxNativeWindow};
+use crate::foundations::window::{backdrop::FxNativeWindowBackdrop, FxNativeWindow};
 
-impl FluentxNativeWindowBackdrop for FluentxNativeWindow {
+impl FxNativeWindowBackdrop for FxNativeWindow {
     fn extend(&self) {}
     fn none(&self) {}
     fn mica(&self) {}

@@ -8,9 +8,9 @@ use windows::Win32::{
     UI::Controls::MARGINS,
 };
 
-use crate::foundations::window::{backdrop::FluentxNativeWindowBackdrop, FluentxNativeWindow};
+use crate::foundations::window::{backdrop::FxNativeWindowBackdrop, FxNativeWindow};
 
-impl FluentxNativeWindowBackdrop for FluentxNativeWindow {
+impl FxNativeWindowBackdrop for FxNativeWindow {
     fn extend(&self) {
         _ = unsafe {
             DwmExtendFrameIntoClientArea(

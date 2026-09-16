@@ -1,15 +1,15 @@
 import 'package:fluentx/src/rust/foundations/window.dart';
 
-enum FluentxBackdropVariant { none, mica, tabbed }
+enum FxBackdropVariant { none, mica, tabbed }
 
-abstract final class FluentxBackdrop {
-  static final _history = <FluentxBackdropVariant>[];
+abstract final class FxBackdrop {
+  static final _history = <FxBackdropVariant>[];
 
-  static FluentxBackdropVariant current() {
+  static FxBackdropVariant current() {
     return _history.lastOrNull ?? .none;
   }
 
-  static void add(FluentxBackdropVariant variant) {
+  static void add(FxBackdropVariant variant) {
     _history.add(variant);
     _apply(variant);
   }
@@ -19,17 +19,17 @@ abstract final class FluentxBackdrop {
     _apply();
   }
 
-  static void _apply([FluentxBackdropVariant? variant]) {
-    final instance = FluentxNativeWindow.instance();
+  static void _apply([FxBackdropVariant? variant]) {
+    final instance = FxNativeWindow.instance();
     instance.extend();
     switch (variant ?? current()) {
-      case FluentxBackdropVariant.none:
+      case .none:
         instance.none();
         break;
-      case FluentxBackdropVariant.mica:
+      case .mica:
         instance.mica();
         break;
-      case FluentxBackdropVariant.tabbed:
+      case .tabbed:
         instance.tabbed();
         break;
     }

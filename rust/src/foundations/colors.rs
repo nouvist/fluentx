@@ -6,12 +6,12 @@ use windows::UI::{
 };
 
 #[frb]
-pub enum FluentxNativeBrightness {
+pub enum FxNativeBrightness {
     Dark,
     Light,
 }
 
-impl FluentxNativeBrightness {
+impl FxNativeBrightness {
     #[frb(sync)]
     #[cfg(windows)]
     pub fn current() -> Option<Self> {
@@ -33,7 +33,7 @@ impl FluentxNativeBrightness {
 }
 
 #[frb]
-pub struct FluentxNativeColors {
+pub struct FxNativeColors {
     pub light3: u32,
     pub light2: u32,
     pub light1: u32,
@@ -43,7 +43,7 @@ pub struct FluentxNativeColors {
     pub dark3: u32,
 }
 
-impl FluentxNativeColors {
+impl FxNativeColors {
     #[frb(sync)]
     #[cfg(windows)]
     pub fn current() -> Option<Self> {

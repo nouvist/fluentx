@@ -1,6 +1,6 @@
 part of 'colors.dart';
 
-class FluentxAccentColors {
+class FxAccentColors {
   final Color light3;
   final Color light2;
   final Color light1;
@@ -9,7 +9,7 @@ class FluentxAccentColors {
   final Color dark2;
   final Color dark3;
 
-  const FluentxAccentColors({
+  const FxAccentColors({
     required this.light3,
     required this.light2,
     required this.light1,
@@ -19,8 +19,8 @@ class FluentxAccentColors {
     required this.dark3,
   });
 
-  factory FluentxAccentColors.current() {
-    final native = FluentxNativeColors.current();
+  factory FxAccentColors.current() {
+    final native = FxNativeColors.current();
     if (native == null) return .fallback;
     return .new(
       light3: Color(native.light3),
@@ -33,7 +33,7 @@ class FluentxAccentColors {
     );
   }
 
-  static const fallback = FluentxAccentColors(
+  static const fallback = FxAccentColors(
     light3: Color(0xff99ebff),
     light2: Color(0xff4cc2ff),
     light1: Color(0xff0091f8),
@@ -44,27 +44,27 @@ class FluentxAccentColors {
   );
 }
 
-class FluentxForegroundPrimaryColors {
+class FxForegroundPrimaryColors {
   final Color primary;
   final Color secondary;
   final Color tertiary;
   final Color disabled;
 
-  const FluentxForegroundPrimaryColors({
+  const FxForegroundPrimaryColors({
     required this.primary,
     required this.secondary,
     required this.tertiary,
     required this.disabled,
   });
 
-  static const dark = FluentxForegroundPrimaryColors(
+  static const dark = FxForegroundPrimaryColors(
     primary: Color(0xffffffff),
     secondary: Color(0xc5ffffff),
     tertiary: Color(0x87ffffff),
     disabled: Color(0x5dffffff),
   );
 
-  static const light = FluentxForegroundPrimaryColors(
+  static const light = FxForegroundPrimaryColors(
     primary: Color(0xe4000000),
     secondary: Color(0x9e000000),
     tertiary: Color(0x72000000),
@@ -72,20 +72,20 @@ class FluentxForegroundPrimaryColors {
   );
 }
 
-class FluentxForegroundAccentColors {
+class FxForegroundAccentColors {
   final Color primary;
   final Color secondary;
   final Color tertiary;
   final Color disabled;
 
-  const FluentxForegroundAccentColors({
+  const FxForegroundAccentColors({
     required this.primary,
     required this.secondary,
     required this.tertiary,
     required this.disabled,
   });
 
-  factory FluentxForegroundAccentColors.dark(FluentxAccentColors accent) =>
+  factory FxForegroundAccentColors.dark(FxAccentColors accent) =>
       .new(
         primary: accent.light3,
         secondary: accent.light3,
@@ -93,7 +93,7 @@ class FluentxForegroundAccentColors {
         disabled: const Color(0x5dffffff),
       );
 
-  factory FluentxForegroundAccentColors.light(FluentxAccentColors accent) =>
+  factory FxForegroundAccentColors.light(FxAccentColors accent) =>
       .new(
         primary: accent.dark2,
         secondary: accent.dark3,
@@ -102,27 +102,27 @@ class FluentxForegroundAccentColors {
       );
 }
 
-class FluentxForegroundOnAccentColors {
+class FxForegroundOnAccentColors {
   final Color primary;
   final Color secondary;
   final Color tertiary;
   final Color disabled;
 
-  const FluentxForegroundOnAccentColors({
+  const FxForegroundOnAccentColors({
     required this.primary,
     required this.secondary,
     required this.tertiary,
     required this.disabled,
   });
 
-  static const dark = FluentxForegroundOnAccentColors(
+  static const dark = FxForegroundOnAccentColors(
     primary: Color(0xff000000),
     secondary: Color(0x80000000),
     tertiary: Color(0x87000000),
     disabled: Color(0xffffffff),
   );
 
-  static const light = FluentxForegroundOnAccentColors(
+  static const light = FxForegroundOnAccentColors(
     primary: Color(0xffffffff),
     secondary: Color(0xb3ffffff),
     tertiary: Color(0xb3ffffff),
@@ -130,7 +130,7 @@ class FluentxForegroundOnAccentColors {
   );
 }
 
-class FluentxControlPrimaryColors {
+class FxControlPrimaryColors {
   final Color primary;
   final Color secondary;
   final Color tertiary;
@@ -139,7 +139,7 @@ class FluentxControlPrimaryColors {
   final Color transparent;
   final Color active;
 
-  const FluentxControlPrimaryColors({
+  const FxControlPrimaryColors({
     required this.primary,
     required this.secondary,
     required this.tertiary,
@@ -149,7 +149,7 @@ class FluentxControlPrimaryColors {
     required this.active,
   });
 
-  static const dark = FluentxControlPrimaryColors(
+  static const dark = FxControlPrimaryColors(
     primary: Color(0x0fffffff),
     secondary: Color(0x15ffffff),
     tertiary: Color(0x0bffffff),
@@ -159,7 +159,7 @@ class FluentxControlPrimaryColors {
     active: Color(0xb31e1e1e),
   );
 
-  static const light = FluentxControlPrimaryColors(
+  static const light = FxControlPrimaryColors(
     primary: Color(0xb3ffffff),
     secondary: Color(0x80f9f9f9),
     tertiary: Color(0x4df9f9f9),
@@ -170,14 +170,14 @@ class FluentxControlPrimaryColors {
   );
 }
 
-class FluentxControlSecondaryColors {
+class FxControlSecondaryColors {
   final Color primary;
   final Color secondary;
   final Color tertiary;
   final Color quarternary;
   final Color disabled;
 
-  const FluentxControlSecondaryColors({
+  const FxControlSecondaryColors({
     required this.primary,
     required this.secondary,
     required this.tertiary,
@@ -185,7 +185,7 @@ class FluentxControlSecondaryColors {
     required this.disabled,
   });
 
-  static const dark = FluentxControlSecondaryColors(
+  static const dark = FxControlSecondaryColors(
     primary: Color(0x00ffffff),
     secondary: Color(0x19000000),
     tertiary: Color(0x0bffffff),
@@ -193,7 +193,7 @@ class FluentxControlSecondaryColors {
     disabled: Color(0x00ffffff),
   );
 
-  static const light = FluentxControlSecondaryColors(
+  static const light = FxControlSecondaryColors(
     primary: Color(0x00ffffff),
     secondary: Color(0x06000000),
     tertiary: Color(0x0f000000),
@@ -202,56 +202,56 @@ class FluentxControlSecondaryColors {
   );
 }
 
-class FluentxControlSolidColors {
+class FxControlSolidColors {
   final Color primary;
 
-  const FluentxControlSolidColors({required this.primary});
+  const FxControlSolidColors({required this.primary});
 
-  static const dark = FluentxControlSolidColors(primary: Color(0xff454545));
-  static const light = FluentxControlSolidColors(primary: Color(0xffffffff));
+  static const dark = FxControlSolidColors(primary: Color(0xff454545));
+  static const light = FxControlSolidColors(primary: Color(0xffffffff));
 }
 
-class FluentxControlStrongColors {
+class FxControlStrongColors {
   final Color primary;
   final Color disabled;
 
-  const FluentxControlStrongColors({
+  const FxControlStrongColors({
     required this.primary,
     required this.disabled,
   });
 
-  static const dark = FluentxControlStrongColors(
+  static const dark = FxControlStrongColors(
     primary: Color(0x8bffffff),
     disabled: Color(0x3fffffff),
   );
 
-  static const light = FluentxControlStrongColors(
+  static const light = FxControlStrongColors(
     primary: Color(0x72000000),
     disabled: Color(0x51000000),
   );
 }
 
-class FluentxControlSubtleColors {
+class FxControlSubtleColors {
   final Color primary;
   final Color secondary;
   final Color tertiary;
   final Color disabled;
 
-  const FluentxControlSubtleColors({
+  const FxControlSubtleColors({
     required this.primary,
     required this.secondary,
     required this.tertiary,
     required this.disabled,
   });
 
-  static const dark = FluentxControlSubtleColors(
+  static const dark = FxControlSubtleColors(
     primary: Color(0x00ffffff),
     secondary: Color(0x0fffffff),
     tertiary: Color(0x0affffff),
     disabled: Color(0x00ffffff),
   );
 
-  static const light = FluentxControlSubtleColors(
+  static const light = FxControlSubtleColors(
     primary: Color(0x00000000),
     secondary: Color(0x09000000),
     tertiary: Color(0x06000000),
@@ -259,27 +259,27 @@ class FluentxControlSubtleColors {
   );
 }
 
-class FluentxControlOnImageColors {
+class FxControlOnImageColors {
   final Color primary;
   final Color secondary;
   final Color tertiary;
   final Color disabled;
 
-  const FluentxControlOnImageColors({
+  const FxControlOnImageColors({
     required this.primary,
     required this.secondary,
     required this.tertiary,
     required this.disabled,
   });
 
-  static const dark = FluentxControlOnImageColors(
+  static const dark = FxControlOnImageColors(
     primary: Color(0xb31c1c1c),
     secondary: Color(0xff1a1a1a),
     tertiary: Color(0xff131313),
     disabled: Color(0xff1e1e1e),
   );
 
-  static const light = FluentxControlOnImageColors(
+  static const light = FxControlOnImageColors(
     primary: Color(0xc9ffffff),
     secondary: Color(0xfff3f3f3),
     tertiary: Color(0xffebebeb),
@@ -287,14 +287,14 @@ class FluentxControlOnImageColors {
   );
 }
 
-class FluentxControlAccentColors {
+class FxControlAccentColors {
   final Color primary;
   final Color secondary;
   final Color tertiary;
   final Color disabled;
   final Color selected;
 
-  const FluentxControlAccentColors({
+  const FxControlAccentColors({
     required this.primary,
     required this.secondary,
     required this.tertiary,
@@ -302,7 +302,7 @@ class FluentxControlAccentColors {
     required this.selected,
   });
 
-  factory FluentxControlAccentColors.dark(FluentxAccentColors accent) => .new(
+  factory FxControlAccentColors.dark(FxAccentColors accent) => .new(
     primary: accent.light2,
     secondary: accent.light2.withAlpha((0.9 * 255).toInt()),
     tertiary: accent.light2.withAlpha((0.8 * 255).toInt()),
@@ -310,7 +310,7 @@ class FluentxControlAccentColors {
     selected: accent.base,
   );
 
-  factory FluentxControlAccentColors.light(FluentxAccentColors accent) => .new(
+  factory FxControlAccentColors.light(FxAccentColors accent) => .new(
     primary: accent.dark2,
     secondary: accent.dark2.withAlpha((0.9 * 255).toInt()),
     tertiary: accent.dark2.withAlpha((0.8 * 255).toInt()),
@@ -319,7 +319,7 @@ class FluentxControlAccentColors {
   );
 }
 
-class FluentxStrokeControlColors {
+class FxStrokeControlColors {
   final Color primary;
   final Color secondary;
   final Color onAccentPrimary;
@@ -328,7 +328,7 @@ class FluentxStrokeControlColors {
   final Color onAccentDisabled;
   final Color onImage;
 
-  const FluentxStrokeControlColors({
+  const FxStrokeControlColors({
     required this.primary,
     required this.secondary,
     required this.onAccentPrimary,
@@ -338,7 +338,7 @@ class FluentxStrokeControlColors {
     required this.onImage,
   });
 
-  static const dark = FluentxStrokeControlColors(
+  static const dark = FxStrokeControlColors(
     primary: Color(0x12ffffff),
     secondary: Color(0x18ffffff),
     onAccentPrimary: Color(0x14ffffff),
@@ -348,7 +348,7 @@ class FluentxStrokeControlColors {
     onImage: Color(0x6b000000),
   );
 
-  static const light = FluentxStrokeControlColors(
+  static const light = FxStrokeControlColors(
     primary: Color(0x0f000000),
     secondary: Color(0x29000000),
     onAccentPrimary: Color(0x14ffffff),
@@ -359,165 +359,165 @@ class FluentxStrokeControlColors {
   );
 }
 
-class FluentxStrokeCardColors {
+class FxStrokeCardColors {
   final Color primaryTransparent;
   final Color primaryOpaque;
 
-  const FluentxStrokeCardColors({
+  const FxStrokeCardColors({
     required this.primaryTransparent,
     required this.primaryOpaque,
   });
 
-  static const dark = FluentxStrokeCardColors(
+  static const dark = FxStrokeCardColors(
     primaryTransparent: Color(0x19000000),
     primaryOpaque: Color(0xff1c1c1c),
   );
 
-  static const light = FluentxStrokeCardColors(
+  static const light = FxStrokeCardColors(
     primaryTransparent: Color(0x0f000000),
     primaryOpaque: Color(0xffebebeb),
   );
 }
 
-class FluentxStrokeSurfaceColors {
+class FxStrokeSurfaceColors {
   final Color primary;
   final Color snapped;
   final Color flyout;
 
-  const FluentxStrokeSurfaceColors({
+  const FxStrokeSurfaceColors({
     required this.primary,
     required this.snapped,
     required this.flyout,
   });
 
-  static const dark = FluentxStrokeSurfaceColors(
+  static const dark = FxStrokeSurfaceColors(
     primary: Color(0x66757575),
     snapped: Color(0xff757575),
     flyout: Color(0x33000000),
   );
 
-  static const light = FluentxStrokeSurfaceColors(
+  static const light = FxStrokeSurfaceColors(
     primary: Color(0x66757575),
     snapped: Color(0xff757575),
     flyout: Color(0x0f000000),
   );
 }
 
-class FluentxStrokeDividerColors {
+class FxStrokeDividerColors {
   final Color primary;
 
-  const FluentxStrokeDividerColors({required this.primary});
+  const FxStrokeDividerColors({required this.primary});
 
-  static const dark = FluentxStrokeDividerColors(primary: Color(0x15ffffff));
-  static const light = FluentxStrokeDividerColors(primary: Color(0x0f000000));
+  static const dark = FxStrokeDividerColors(primary: Color(0x15ffffff));
+  static const light = FxStrokeDividerColors(primary: Color(0x0f000000));
 }
 
-class FluentxStrokeFocusColors {
+class FxStrokeFocusColors {
   final Color outer;
   final Color inner;
 
-  const FluentxStrokeFocusColors({required this.outer, required this.inner});
+  const FxStrokeFocusColors({required this.outer, required this.inner});
 
-  static const dark = FluentxStrokeFocusColors(
+  static const dark = FxStrokeFocusColors(
     outer: Color(0xffffffff),
     inner: Color(0xb3000000),
   );
 
-  static const light = FluentxStrokeFocusColors(
+  static const light = FxStrokeFocusColors(
     outer: Color(0xe4000000),
     inner: Color(0xb3ffffff),
   );
 }
 
-class FluentxBackgroundCardColors {
+class FxBackgroundCardColors {
   final Color primary;
   final Color secondary;
   final Color tertiary; // coded red
 
-  const FluentxBackgroundCardColors({
+  const FxBackgroundCardColors({
     required this.primary,
     required this.secondary,
     required this.tertiary,
   });
 
-  static const dark = FluentxBackgroundCardColors(
+  static const dark = FxBackgroundCardColors(
     primary: Color(0x0dffffff),
     secondary: Color(0x08ffffff),
     tertiary: Color(0x12ffffff),
   );
 
-  static const light = FluentxBackgroundCardColors(
+  static const light = FxBackgroundCardColors(
     primary: Color(0xb3ffffff),
     secondary: Color(0x80f6f6f6),
     tertiary: Color(0xffffffff),
   );
 }
 
-class FluentxBackgroundSmokeColors {
+class FxBackgroundSmokeColors {
   final Color primary;
 
-  const FluentxBackgroundSmokeColors({required this.primary});
+  const FxBackgroundSmokeColors({required this.primary});
 
-  static const dark = FluentxBackgroundSmokeColors(primary: Color(0x4d000000));
+  static const dark = FxBackgroundSmokeColors(primary: Color(0x4d000000));
 
-  static const light = FluentxBackgroundSmokeColors(primary: Color(0x4d000000));
+  static const light = FxBackgroundSmokeColors(primary: Color(0x4d000000));
 }
 
-class FluentxBackgroundLayerColors {
+class FxBackgroundLayerColors {
   final Color primary;
   final Color secondary;
 
-  const FluentxBackgroundLayerColors({
+  const FxBackgroundLayerColors({
     required this.primary,
     required this.secondary,
   });
 
-  static const dark = FluentxBackgroundLayerColors(
+  static const dark = FxBackgroundLayerColors(
     primary: Color(0x4c3a3a3a),
     secondary: Color(0x0dffffff),
   );
 
-  static const light = FluentxBackgroundLayerColors(
+  static const light = FxBackgroundLayerColors(
     primary: Color(0x80ffffff),
     secondary: Color(0xffffffff),
   );
 }
 
-class FluentxBackgroundLayerOnAcrylicColors {
+class FxBackgroundLayerOnAcrylicColors {
   final Color primary;
 
-  const FluentxBackgroundLayerOnAcrylicColors({required this.primary});
+  const FxBackgroundLayerOnAcrylicColors({required this.primary});
 
-  static const dark = FluentxBackgroundLayerOnAcrylicColors(
+  static const dark = FxBackgroundLayerOnAcrylicColors(
     primary: Color(0x09ffffff),
   );
 
-  static const light = FluentxBackgroundLayerOnAcrylicColors(
+  static const light = FxBackgroundLayerOnAcrylicColors(
     primary: Color(0x40ffffff),
   );
 }
 
-class FluentxBackgroundLayerOnMicaAltColors {
+class FxBackgroundLayerOnMicaAltColors {
   final Color primary; // coded red
   final Color secondary; // coded red
   final Color tertiary; // coded red
   final Color transparent; // coded red
 
-  const FluentxBackgroundLayerOnMicaAltColors({
+  const FxBackgroundLayerOnMicaAltColors({
     required this.primary,
     required this.secondary,
     required this.tertiary,
     required this.transparent,
   });
 
-  static const dark = FluentxBackgroundLayerOnMicaAltColors(
+  static const dark = FxBackgroundLayerOnMicaAltColors(
     primary: Color(0x733a3a3a),
     secondary: Color(0x0fffffff),
     tertiary: Color(0xfff9f9f9),
     transparent: Color(0x00000000),
   );
 
-  static const light = FluentxBackgroundLayerOnMicaAltColors(
+  static const light = FxBackgroundLayerOnMicaAltColors(
     primary: Color(0xb3ffffff),
     secondary: Color(0x0a000000),
     tertiary: Color(0xfff9f9f9),
@@ -525,7 +525,7 @@ class FluentxBackgroundLayerOnMicaAltColors {
   );
 }
 
-class FluentxBackgroundSolidColors {
+class FxBackgroundSolidColors {
   final Color primary;
   final Color alternative; // coded red
   final Color secondary;
@@ -534,7 +534,7 @@ class FluentxBackgroundSolidColors {
   final Color quinary; // coded red
   final Color senary; // coded red
 
-  const FluentxBackgroundSolidColors({
+  const FxBackgroundSolidColors({
     required this.primary,
     required this.alternative,
     required this.secondary,
@@ -544,7 +544,7 @@ class FluentxBackgroundSolidColors {
     required this.senary,
   });
 
-  static const dark = FluentxBackgroundSolidColors(
+  static const dark = FxBackgroundSolidColors(
     primary: Color(0xff202020),
     alternative: Color(0xff0a0a0a),
     secondary: Color(0xff1c1c1c),
@@ -554,7 +554,7 @@ class FluentxBackgroundSolidColors {
     senary: Color(0xff373737),
   );
 
-  static const light = FluentxBackgroundSolidColors(
+  static const light = FxBackgroundSolidColors(
     primary: Color(0xfff3f3f3),
     alternative: Color(0xffdadada),
     secondary: Color(0xffeeeeee),
@@ -565,61 +565,61 @@ class FluentxBackgroundSolidColors {
   );
 }
 
-class FluentxSystemItemColors {
+class FxSystemItemColors {
   final Color foreground;
   final Color background;
 
-  const FluentxSystemItemColors({
+  const FxSystemItemColors({
     required this.foreground,
     required this.background,
   });
 
-  static const attentionDark = FluentxSystemItemColors(
+  static const attentionDark = FxSystemItemColors(
     foreground: Color(0xff60cdff),
     background: Color(0xff2e2e2e),
   );
-  static const successDark = FluentxSystemItemColors(
+  static const successDark = FxSystemItemColors(
     foreground: Color(0xff6ccb5f),
     background: Color(0xff393d1b),
   );
-  static const cautionDark = FluentxSystemItemColors(
+  static const cautionDark = FxSystemItemColors(
     foreground: Color(0xfffce100),
     background: Color(0xff433519),
   );
-  static const criticalDark = FluentxSystemItemColors(
+  static const criticalDark = FxSystemItemColors(
     foreground: Color(0xffff99a4),
     background: Color(0xff442726),
   );
-  static const neutralDark = FluentxSystemItemColors(
+  static const neutralDark = FxSystemItemColors(
     foreground: Color(0x8bffffff),
     background: Color(0x08ffffff),
   );
-  static const neutralSolidDark = FluentxSystemItemColors(
+  static const neutralSolidDark = FxSystemItemColors(
     foreground: Color(0xff9d9d9d),
     background: Color(0xff2e2e2e),
   );
 
-  static const attentionLight = FluentxSystemItemColors(
+  static const attentionLight = FxSystemItemColors(
     foreground: Color(0xff0070cb),
     background: Color(0xfff7f7f7),
   );
-  static const successLight = FluentxSystemItemColors(
+  static const successLight = FxSystemItemColors(
     foreground: Color(0xff0f7b0f),
     background: Color(0xffdff6dd),
   );
-  static const cautionLight = FluentxSystemItemColors(
+  static const cautionLight = FxSystemItemColors(
     foreground: Color(0xff9d5d00),
     background: Color(0xfffff4ce),
   );
-  static const criticalLight = FluentxSystemItemColors(
+  static const criticalLight = FxSystemItemColors(
     foreground: Color(0xffc42b1c),
     background: Color(0xfffde7e9),
   );
-  static const neutralLight = FluentxSystemItemColors(
+  static const neutralLight = FxSystemItemColors(
     foreground: Color(0x72000000),
     background: Color(0x06000000),
   );
-  static const neutralSolidLight = FluentxSystemItemColors(
+  static const neutralSolidLight = FxSystemItemColors(
     foreground: Color(0xff8a8a8a),
     background: Color(0xfff3f3f3),
   );

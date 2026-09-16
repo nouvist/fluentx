@@ -36,7 +36,7 @@ use windows::{
     },
 };
 
-use crate::foundations::colors::FluentxNativeBrightness;
+use crate::foundations::colors::FxNativeBrightness;
 
 pub mod backdrop;
 #[cfg(windows)]
@@ -46,7 +46,7 @@ pub mod backdrop_stub;
 
 const LAYOUT_U32: Layout = Layout::new::<LRESULT>();
 
-struct FluentxNativeWindowInner {
+struct FxNativeWindowInner {
     next: AtomicU64,
     root_hwnd: HWND,
     flutter_hwnd: HWND,
@@ -59,10 +59,10 @@ struct FluentxNativeWindowInner {
     >,
 }
 
-unsafe impl Send for FluentxNativeWindowInner {}
-unsafe impl Sync for FluentxNativeWindowInner {}
+unsafe impl Send for FxNativeWindowInner {}
+unsafe impl Sync for FxNativeWindowInner {}
 
-impl Drop for FluentxNativeWindowInner {
+impl Drop for FxNativeWindowInner {
     fn drop(&mut self) {
         unsafe { dealloc(self.hittest_ptr as *mut u8, LAYOUT_U32) };
     }
@@ -70,7 +70,7 @@ impl Drop for FluentxNativeWindowInner {
 
 macro_rules! it {
     ($ref:ident) => {{
-        let it = $ref as *const FluentxNativeWindowInner;
+        let it = $ref as *const FxNativeWindowInner;
         Arc::increment_strong_count(it);
         Self(Arc::from_raw(it))
     }};
@@ -79,15 +79,15 @@ macro_rules! it {
 #[frb(opaque)]
 #[derive(Clone)]
 #[repr(transparent)]
-pub struct FluentxNativeWindow(Arc<FluentxNativeWindowInner>);
+pub struct FxNativeWindow(Arc<FxNativeWindowInner>);
 
 #[frb(non_opaque)]
-pub struct FluentxNativeWindowListener(pub u64);
+pub struct FxNativeWindowListener(pub u64);
 
-impl FluentxNativeWindow {
+impl FxNativeWindow {
     #[frb(sync)]
     pub fn instance() -> Self {
-        static INSTANCE: OnceLock<FluentxNativeWindow> = OnceLock::new();
+        static INSTANCE: OnceLock<FxNativeWindow> = OnceLock::new();
         INSTANCE.get_or_init(|| Self::init()).clone()
     }
 
@@ -154,7 +154,7 @@ impl FluentxNativeWindow {
         let flutter_hwnd = Self::find_flutter_hwnd(root_hwnd);
 
         unsafe {
-            let it = Self(Arc::new(FluentxNativeWindowInner {
+            let it = Self(Arc::new(FxNativeWindowInner {
                 root_hwnd,
                 flutter_hwnd,
                 hittest_ptr: alloc(LAYOUT_U32) as *mut _,
@@ -269,9 +269,9 @@ impl FluentxNativeWindow {
         dwrefdata: usize,
     ) -> LRESULT {
         if umsg == WM_SETTINGCHANGE {
-            let brightness = FluentxNativeBrightness::current();
+            let brightness = FxNativeBrightness::current();
             let is_dark = match brightness {
-                Some(FluentxNativeBrightness::Dark) => TRUE,
+                Some(FxNativeBrightness::Dark) => TRUE,
                 _ => FALSE,
             };
 
@@ -322,14 +322,14 @@ impl FluentxNativeWindow {
     pub async fn listen(
         &self,
         callback: impl Fn() -> DartFnFuture<()> + Send + Sync + 'static,
-    ) -> FluentxNativeWindowListener {
+    ) -> FxNativeWindowListener {
         let mut listeners = self.0.listeners.write().await;
         let id = self.0.next.fetch_add(1, Ordering::Relaxed);
         listeners.push((id, Box::new(callback)));
-        FluentxNativeWindowListener(id)
+        FxNativeWindowListener(id)
     }
 
-    pub async fn cancel(&self, listener: FluentxNativeWindowListener) {
+    pub async fn cancel(&self, listener: FxNativeWindowListener) {
         let mut listeners = self.0.listeners.write().await;
         listeners.retain(|it| it.0 != listener.0);
     }

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Fluentx.init();
-  runApp(FluentxTheme(child: const MyApp()));
+  runApp(FxTheme(child: const MyApp()));
 }
 
 class MyApp extends StatefulWidget {
@@ -18,18 +18,18 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    FluentxBackdrop.add(.mica);
+    FxBackdrop.add(.mica);
   }
 
   @override
   void dispose() {
-    FluentxBackdrop.pop();
+    FxBackdrop.pop();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final c = FluentxTheme.of(context).colors;
+    final c = FxTheme.of(context).colors;
 
     return MaterialApp(
       home: Scaffold(
@@ -38,21 +38,24 @@ class _MyAppState extends State<MyApp> {
           padding: .all(32),
           children: [
             ColorTile(
-              title: Text("Text"),
+              title: Text("Brightness"),
               children: [
-                ColorPreview(c.foreground.primary.primary),
-                ColorPreview(c.foreground.primary.secondary),
-                ColorPreview(c.foreground.primary.tertiary),
-                ColorPreview(c.foreground.primary.disabled),
+                switch (c.brightness) {
+                  .dark => Text('Dark Mode'),
+                  .light => Text('Light Mode'),
+                },
               ],
             ),
             ColorTile(
-              title: Text("Text Accent"),
+              title: Text("Accent"),
               children: [
-                ColorPreview(c.foreground.accent.primary),
-                ColorPreview(c.foreground.accent.secondary),
-                ColorPreview(c.foreground.accent.tertiary),
-                ColorPreview(c.foreground.accent.disabled),
+                ColorPreview(c.accent.light3),
+                ColorPreview(c.accent.light2),
+                ColorPreview(c.accent.light1),
+                ColorPreview(c.accent.base),
+                ColorPreview(c.accent.dark1),
+                ColorPreview(c.accent.dark2),
+                ColorPreview(c.accent.dark3),
               ],
             ),
           ],
@@ -70,17 +73,15 @@ class ColorTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final c = FluentxColors.current();
-    return Row(
-      children: [
-        Expanded(
-          child: DefaultTextStyle.merge(
-            style: .new(color: c.foreground.primary.primary),
-            child: title,
-          ),
-        ),
-        Expanded(flex: 3, child: Wrap(children: children)),
-      ],
+    final c = FxColors.current();
+    return DefaultTextStyle.merge(
+      style: .new(color: c.foreground.primary.primary),
+      child: Row(
+        children: [
+          Expanded(child: title),
+          Expanded(flex: 3, child: Row(children: children)),
+        ],
+      ),
     );
   }
 }
