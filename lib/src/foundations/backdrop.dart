@@ -4,11 +4,6 @@ enum FluentxBackdropVariant { none, mica, tabbed }
 
 abstract final class FluentxBackdrop {
   static final _history = <FluentxBackdropVariant>[];
-  static var _isNative = null as bool?;
-
-  static bool isNative() {
-    return _isNative ??= FluentxNativeWindow.isNative();
-  }
 
   static FluentxBackdropVariant current() {
     return _history.lastOrNull ?? .none;

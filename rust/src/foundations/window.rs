@@ -10,40 +10,37 @@ use std::{
 use flutter_rust_bridge::{frb, DartFnFuture};
 use tokio::sync::RwLock;
 use windows::{
-    core::BOOL,
     Win32::{
-        Foundation::{FALSE, HWND, LPARAM, LRESULT, TRUE, WPARAM},
-        Graphics::Dwm::{
-            DwmExtendFrameIntoClientArea, DwmSetWindowAttribute, DWMSBT_MAINWINDOW, DWMSBT_NONE,
-            DWMSBT_TABBEDWINDOW, DWMWA_SYSTEMBACKDROP_TYPE, DWMWA_USE_IMMERSIVE_DARK_MODE,
-            DWMWA_WINDOW_CORNER_PREFERENCE, DWMWCP_ROUND, DWM_SYSTEMBACKDROP_TYPE,
-            DWM_WINDOW_CORNER_PREFERENCE,
-        },
-        System::Threading::GetCurrentProcessId,
-        UI::{
-            Controls::MARGINS,
-            Shell::{DefSubclassProc, SetWindowSubclass},
-            WindowsAndMessaging::{
-                EnumWindows, GetWindowLongPtrW, GetWindowThreadProcessId, SetWindowLongPtrW,
-                SetWindowPos, GWL_STYLE, SWP_DRAWFRAME, SWP_FRAMECHANGED, SWP_NOMOVE,
-                SWP_NOOWNERZORDER, SWP_NOSIZE, SWP_NOZORDER, WM_NCCALCSIZE, WM_SETTINGCHANGE,
-                WS_SYSMENU,
+        Foundation::{FALSE, HWND, LPARAM, LRESULT, TRUE, WPARAM}, Graphics::Dwm::{
+            DWM_SYSTEMBACKDROP_TYPE, DWM_WINDOW_CORNER_PREFERENCE, DWMSBT_MAINWINDOW, DWMSBT_NONE, DWMSBT_TABBEDWINDOW, DWMWA_SYSTEMBACKDROP_TYPE, DWMWA_USE_IMMERSIVE_DARK_MODE, DWMWA_WINDOW_CORNER_PREFERENCE, DWMWCP_ROUND, DwmExtendFrameIntoClientArea, DwmSetWindowAttribute,
+        }, System::Threading::GetCurrentProcessId, UI::{
+            Controls::MARGINS, Shell::{DefSubclassProc, SetWindowSubclass}, WindowsAndMessaging::{
+                EnumChildWindows, EnumWindows, GWL_STYLE, GetClassNameW, GetWindowLongPtrW, GetWindowThreadProcessId, HTCAPTION, HTTRANSPARENT, SWP_DRAWFRAME, SWP_FRAMECHANGED, SWP_NOMOVE, SWP_NOOWNERZORDER, SWP_NOSIZE, SWP_NOZORDER, SetWindowLongPtrW, SetWindowPos, WM_NCCALCSIZE, WM_NCHITTEST, WM_SETTINGCHANGE, WS_SYSMENU,
             },
         },
-    },
+    }, core::{BOOL, HSTRING},
 };
 
 use crate::foundations::colors::FluentxNativeBrightness;
 
 struct FluentxNativeWindowInner {
-    hwnd: usize,
     next: AtomicU64,
+    root_hwnd: usize,
+    flutter_hwnd: usize,
     listeners: RwLock<
         Vec<(
             u64,
             Box<dyn Fn() -> DartFnFuture<()> + Send + Sync + 'static>,
         )>,
     >,
+}
+
+macro_rules! it {
+    ($ref:ident) => {{
+        let it = $ref as *const FluentxNativeWindowInner;
+        Arc::increment_strong_count(it);
+        Self(Arc::from_raw(it))
+    }};
 }
 
 #[frb(opaque)]
@@ -61,17 +58,7 @@ impl FluentxNativeWindow {
         INSTANCE.get_or_init(|| Self::init()).clone()
     }
 
-    #[cfg(not(windows))]
-    fn init() -> Self {
-        Self(Arc::new(FluentxNativeWindowInner {
-            hwnd: 0,
-            listeners: RwLock::new(Vec::new()),
-            next: AtomicU64::new(0),
-        }))
-    }
-
-    #[cfg(windows)]
-    fn init() -> Self {
+    fn find_root_hwnd() -> HWND {
         struct Param {
             pid: u32,
             hwnd: HWND,
@@ -95,46 +82,93 @@ impl FluentxNativeWindow {
             TRUE
         }
 
+        _ = unsafe { EnumWindows(Some(callback), LPARAM(&mut lparam as *mut _ as isize)) };
+        lparam.hwnd
+    }
+
+    fn find_flutter_hwnd(root: HWND) -> HWND {
+        let mut lparam = HWND::default();
+
+        unsafe extern "system" fn callback(hwnd: HWND, lparam: LPARAM) -> BOOL {
+            let param = &mut *(lparam.0 as *mut HWND);
+
+            let mut buf = [0u16; 16];
+            GetClassNameW(hwnd, &mut buf);
+            let str = HSTRING::from_wide(&buf);
+            let str = str.to_string();
+            if str.starts_with("FLUTTERVIEW") {
+                *param = hwnd;
+                println!("DAPAT");
+                return FALSE;
+            }
+
+            TRUE
+        }
+
+        _ = unsafe {
+            EnumChildWindows(
+                Some(root),
+                Some(callback),
+                LPARAM(&mut lparam as *mut _ as isize),
+            )
+        };
+
+        lparam
+    }
+
+    fn init() -> Self {
+        let root_hwnd = Self::find_root_hwnd();
+        let flutter_hwnd = Self::find_flutter_hwnd(root_hwnd);
+
         unsafe {
-            _ = EnumWindows(Some(callback), LPARAM(&mut lparam as *mut _ as isize));
             let it = Self(Arc::new(FluentxNativeWindowInner {
-                hwnd: lparam.hwnd.0 as usize,
-                listeners: RwLock::new(Vec::new()),
                 next: AtomicU64::new(0),
+                root_hwnd: root_hwnd.0 as usize,
+                flutter_hwnd: flutter_hwnd.0 as usize,
+                listeners: RwLock::new(Vec::new()),
             }));
-            let it_ptr = Arc::into_raw(it.clone().0);
 
             _ = SetWindowSubclass(
-                lparam.hwnd,
-                Some(Self::handle_subclass),
-                &Self::handle_subclass as *const _ as usize,
-                it_ptr as usize,
+                root_hwnd,
+                Some(Self::handle_root),
+                &Self::handle_root as *const _ as usize,
+                Arc::into_raw(it.clone().0) as usize,
+            );
+
+            _ = SetWindowSubclass(
+                flutter_hwnd,
+                Some(Self::handle_flutter),
+                &Self::handle_flutter as *const _ as usize,
+                Arc::into_raw(it.clone().0) as usize,
             );
 
             let corner = DWMWCP_ROUND;
             _ = DwmSetWindowAttribute(
-                it.raw(),
+                it.root_hwnd(),
                 DWMWA_WINDOW_CORNER_PREFERENCE,
                 &corner as *const _ as *const c_void,
                 mem::size_of::<DWM_WINDOW_CORNER_PREFERENCE>() as u32,
             );
 
-            let mut style = GetWindowLongPtrW(it.raw(), GWL_STYLE) as u32;
+            let mut style = GetWindowLongPtrW(it.root_hwnd(), GWL_STYLE) as u32;
             style &= !WS_SYSMENU.0;
-            SetWindowLongPtrW(it.raw(), GWL_STYLE, style as isize);
+            SetWindowLongPtrW(it.root_hwnd(), GWL_STYLE, style as isize);
 
             it
         }
     }
 
     #[frb(ignore)]
-    #[cfg(windows)]
-    pub fn raw(&self) -> HWND {
-        HWND(self.0.hwnd as *mut _)
+    pub fn root_hwnd(&self) -> HWND {
+        HWND(self.0.root_hwnd as *mut _)
+    }
+
+    #[frb(ignore)]
+    pub fn flutter_hwnd(&self) -> HWND {
+        HWND(self.0.flutter_hwnd as *mut _)
     }
 
     #[frb(sync)]
-    #[cfg(windows)]
     pub fn refresh(&self) {
         unsafe {
             let swp = SWP_NOMOVE
@@ -143,12 +177,11 @@ impl FluentxNativeWindow {
                 | SWP_NOOWNERZORDER
                 | SWP_FRAMECHANGED
                 | SWP_DRAWFRAME;
-            _ = SetWindowPos(self.raw(), None, 0, 0, 0, 0, swp);
+            _ = SetWindowPos(self.root_hwnd(), None, 0, 0, 0, 0, swp);
         }
     }
 
-    #[cfg(windows)]
-    unsafe extern "system" fn handle_subclass(
+    unsafe extern "system" fn handle_root(
         hwnd: HWND,
         umsg: u32,
         wparam: WPARAM,
@@ -156,10 +189,6 @@ impl FluentxNativeWindow {
         _uidsubclass: usize,
         dwrefdata: usize,
     ) -> LRESULT {
-        let it = dwrefdata as *const FluentxNativeWindowInner;
-        Arc::increment_strong_count(it);
-        let it = Self(Arc::from_raw(it));
-
         if umsg == WM_SETTINGCHANGE {
             let brightness = FluentxNativeBrightness::current();
             let is_dark = match brightness {
@@ -167,6 +196,7 @@ impl FluentxNativeWindow {
                 _ => FALSE,
             };
 
+            let it = it!(dwrefdata);
             crate::spawn(async move {
                 let listeners = it.0.listeners.read().await;
                 for (_, listener) in listeners.iter() {
@@ -182,8 +212,24 @@ impl FluentxNativeWindow {
             );
         } else if umsg == WM_NCCALCSIZE {
             return LRESULT(0);
+        } else if umsg == WM_NCHITTEST {
+            return LRESULT(HTCAPTION as _);
         }
 
+        DefSubclassProc(hwnd, umsg, wparam, lparam)
+    }
+
+    unsafe extern "system" fn handle_flutter(
+        hwnd: HWND,
+        umsg: u32,
+        wparam: WPARAM,
+        lparam: LPARAM,
+        _uidsubclass: usize,
+        _dwrefdata: usize,
+    ) -> LRESULT {
+        if umsg == WM_NCHITTEST {
+            return LRESULT(HTTRANSPARENT as _);
+        }
         DefSubclassProc(hwnd, umsg, wparam, lparam)
     }
 
@@ -203,27 +249,10 @@ impl FluentxNativeWindow {
     }
 
     #[frb(sync)]
-    #[cfg(not(windows))]
-    pub fn is_native() -> bool {
-        false
-    }
-
-    #[frb(sync)]
-    #[cfg(windows)]
-    pub fn is_native() -> bool {
-        true
-    }
-
-    #[frb(sync)]
-    #[cfg(not(windows))]
-    pub fn extend() {}
-
-    #[frb(sync)]
-    #[cfg(windows)]
     pub fn extend() {
         _ = unsafe {
             DwmExtendFrameIntoClientArea(
-                FluentxNativeWindow::instance().raw(),
+                FluentxNativeWindow::instance().root_hwnd(),
                 &MARGINS {
                     cxLeftWidth: -1,
                     cxRightWidth: -1,
@@ -235,15 +264,10 @@ impl FluentxNativeWindow {
     }
 
     #[frb(sync)]
-    #[cfg(not(windows))]
-    pub fn none() {}
-
-    #[frb(sync)]
-    #[cfg(windows)]
     pub fn none() {
         _ = unsafe {
             DwmSetWindowAttribute(
-                FluentxNativeWindow::instance().raw(),
+                FluentxNativeWindow::instance().root_hwnd(),
                 DWMWA_SYSTEMBACKDROP_TYPE,
                 &DWMSBT_NONE as *const _ as *const c_void,
                 mem::size_of::<DWM_SYSTEMBACKDROP_TYPE>() as u32,
@@ -252,15 +276,10 @@ impl FluentxNativeWindow {
     }
 
     #[frb(sync)]
-    #[cfg(not(windows))]
-    pub fn mica() {}
-
-    #[frb(sync)]
-    #[cfg(windows)]
     pub fn mica() {
         _ = unsafe {
             DwmSetWindowAttribute(
-                FluentxNativeWindow::instance().raw(),
+                FluentxNativeWindow::instance().root_hwnd(),
                 DWMWA_SYSTEMBACKDROP_TYPE,
                 &DWMSBT_MAINWINDOW as *const _ as *const c_void,
                 mem::size_of::<DWM_SYSTEMBACKDROP_TYPE>() as u32,
@@ -269,19 +288,14 @@ impl FluentxNativeWindow {
     }
 
     #[frb(sync)]
-    #[cfg(windows)]
     pub fn tabbed() {
         _ = unsafe {
             DwmSetWindowAttribute(
-                FluentxNativeWindow::instance().raw(),
+                FluentxNativeWindow::instance().root_hwnd(),
                 DWMWA_SYSTEMBACKDROP_TYPE,
                 &DWMSBT_TABBEDWINDOW as *const _ as *const c_void,
                 mem::size_of::<DWM_SYSTEMBACKDROP_TYPE>() as u32,
             )
         };
     }
-
-    #[frb(sync)]
-    #[cfg(not(windows))]
-    pub fn tabbed() {}
 }
