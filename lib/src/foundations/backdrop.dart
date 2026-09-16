@@ -20,16 +20,17 @@ abstract final class FluentxBackdrop {
   }
 
   static void _apply([FluentxBackdropVariant? variant]) {
-    FluentxNativeWindow.extend();
+    final instance = FluentxNativeWindow.instance();
+    instance.extend();
     switch (variant ?? current()) {
       case FluentxBackdropVariant.none:
-        FluentxNativeWindow.none();
+        instance.none();
         break;
       case FluentxBackdropVariant.mica:
-        FluentxNativeWindow.mica();
+        instance.mica();
         break;
       case FluentxBackdropVariant.tabbed:
-        FluentxNativeWindow.tabbed();
+        instance.tabbed();
         break;
     }
   }

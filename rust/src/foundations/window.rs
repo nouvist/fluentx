@@ -16,31 +16,33 @@ use windows::{
         Foundation::{FALSE, HWND, LPARAM, LRESULT, POINT, RECT, TRUE, WPARAM},
         Graphics::{
             Dwm::{
-                DwmExtendFrameIntoClientArea, DwmSetWindowAttribute, DWMSBT_MAINWINDOW,
-                DWMSBT_NONE, DWMSBT_TABBEDWINDOW, DWMWA_SYSTEMBACKDROP_TYPE,
-                DWMWA_USE_IMMERSIVE_DARK_MODE, DWMWA_WINDOW_CORNER_PREFERENCE, DWMWCP_ROUND,
-                DWM_SYSTEMBACKDROP_TYPE, DWM_WINDOW_CORNER_PREFERENCE,
+                DwmSetWindowAttribute, DWMWA_USE_IMMERSIVE_DARK_MODE,
+                DWMWA_WINDOW_CORNER_PREFERENCE, DWMWCP_ROUND, DWM_WINDOW_CORNER_PREFERENCE,
             },
             Gdi::ScreenToClient,
         },
         System::Threading::GetCurrentProcessId,
         UI::{
-            Controls::MARGINS,
             Shell::{DefSubclassProc, SetWindowSubclass},
             WindowsAndMessaging::{
                 EnumChildWindows, EnumWindows, GetClassNameW, GetCursorPos, GetSystemMetrics,
                 GetWindowLongPtrW, GetWindowRect, GetWindowThreadProcessId, SetWindowLongPtrW,
-                SetWindowPos, GWL_STYLE, HTBOTTOM, HTBOTTOMLEFT, HTBOTTOMRIGHT, HTCAPTION,
-                HTCLIENT, HTLEFT, HTRIGHT, HTTOP, HTTOPLEFT, HTTOPRIGHT, HTTRANSPARENT,
-                SM_CXSIZEFRAME, SWP_DRAWFRAME, SWP_FRAMECHANGED, SWP_NOMOVE, SWP_NOOWNERZORDER,
-                SWP_NOSIZE, SWP_NOZORDER, WM_NCCALCSIZE, WM_NCHITTEST, WM_SETTINGCHANGE,
-                WS_SYSMENU,
+                SetWindowPos, GWL_STYLE, HTBOTTOM, HTBOTTOMLEFT, HTBOTTOMRIGHT, HTCLIENT, HTLEFT,
+                HTRIGHT, HTTOP, HTTOPLEFT, HTTOPRIGHT, HTTRANSPARENT, SM_CXSIZEFRAME,
+                SWP_DRAWFRAME, SWP_FRAMECHANGED, SWP_NOMOVE, SWP_NOOWNERZORDER, SWP_NOSIZE,
+                SWP_NOZORDER, WM_NCCALCSIZE, WM_NCHITTEST, WM_SETTINGCHANGE, WS_SYSMENU,
             },
         },
     },
 };
 
 use crate::foundations::colors::FluentxNativeBrightness;
+
+pub mod backdrop;
+#[cfg(windows)]
+pub mod backdrop_impl;
+#[cfg(not(windows))]
+pub mod backdrop_stub;
 
 const LAYOUT_U32: Layout = Layout::new::<LRESULT>();
 
@@ -330,56 +332,5 @@ impl FluentxNativeWindow {
     pub async fn cancel(&self, listener: FluentxNativeWindowListener) {
         let mut listeners = self.0.listeners.write().await;
         listeners.retain(|it| it.0 != listener.0);
-    }
-
-    #[frb(sync)]
-    pub fn extend() {
-        _ = unsafe {
-            DwmExtendFrameIntoClientArea(
-                FluentxNativeWindow::instance().root_hwnd(),
-                &MARGINS {
-                    cxLeftWidth: -1,
-                    cxRightWidth: -1,
-                    cyTopHeight: -1,
-                    cyBottomHeight: -1,
-                },
-            )
-        };
-    }
-
-    #[frb(sync)]
-    pub fn none() {
-        _ = unsafe {
-            DwmSetWindowAttribute(
-                FluentxNativeWindow::instance().root_hwnd(),
-                DWMWA_SYSTEMBACKDROP_TYPE,
-                &DWMSBT_NONE as *const _ as *const c_void,
-                mem::size_of::<DWM_SYSTEMBACKDROP_TYPE>() as u32,
-            )
-        };
-    }
-
-    #[frb(sync)]
-    pub fn mica() {
-        _ = unsafe {
-            DwmSetWindowAttribute(
-                FluentxNativeWindow::instance().root_hwnd(),
-                DWMWA_SYSTEMBACKDROP_TYPE,
-                &DWMSBT_MAINWINDOW as *const _ as *const c_void,
-                mem::size_of::<DWM_SYSTEMBACKDROP_TYPE>() as u32,
-            )
-        };
-    }
-
-    #[frb(sync)]
-    pub fn tabbed() {
-        _ = unsafe {
-            DwmSetWindowAttribute(
-                FluentxNativeWindow::instance().root_hwnd(),
-                DWMWA_SYSTEMBACKDROP_TYPE,
-                &DWMSBT_TABBEDWINDOW as *const _ as *const c_void,
-                mem::size_of::<DWM_SYSTEMBACKDROP_TYPE>() as u32,
-            )
-        };
     }
 }
