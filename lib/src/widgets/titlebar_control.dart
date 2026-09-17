@@ -49,19 +49,23 @@ class _ItemState extends State<_Item> {
   final _key = GlobalKey();
 
   late int _hit;
+  late int _mouse;
   late int _change;
   var _isHover = false;
+  var _isPressed = false;
 
   @override
   void initState() {
     super.initState();
     _hit = FxNativeWindow.instance().addHitListener(callback: _handleHit);
+    _hit = FxNativeWindow.instance().addMouseListener(callback: _handleMouse);
     _change = FxNativeWindow.instance().addListener(callback: _handleChange);
   }
 
   @override
   void dispose() {
     FxNativeWindow.instance().removeHitListener(id: _hit);
+    FxNativeWindow.instance().removeMouseListener(id: _mouse);
     FxNativeWindow.instance().removeListener(id: _change);
     super.dispose();
   }
@@ -82,6 +86,17 @@ class _ItemState extends State<_Item> {
     if (!mounted) return;
     setState(() {
       _isHover = next;
+      if (next == false) _isPressed = false;
+    });
+  }
+
+  Future<void> _handleMouse(FxNativeWindowMouseEvent event) async {
+    if (!_isHover) return;
+    await yieldNow();
+
+    if (!mounted) return;
+    setState(() {
+      _isPressed = event == .down;
     });
   }
 
@@ -117,15 +132,22 @@ class _ItemState extends State<_Item> {
     return _LayoutSync(
       onLayout: _handleLayout,
       child: ColoredBox(
-        color: switch (_isHover) {
-          true => switch (widget.variant) {
+        color: switch ((_isHover, _isPressed)) {
+          (true, true) => switch (widget.variant) {
+            .close => switch (t.colors.brightness) {
+              .dark => Color(0xe6c42b1c),
+              .light => Color(0xe6c42b1c),
+            },
+            _ => t.colors.control.subtle.tertiary,
+          },
+          (true, false) => switch (widget.variant) {
             .close => switch (t.colors.brightness) {
               .dark => Color(0xffc42b1c),
               .light => Color(0xffc42b1c),
             },
             _ => t.colors.control.subtle.secondary,
           },
-          false => t.colors.control.subtle.primary,
+          _ => t.colors.control.subtle.primary,
         },
         child: Center(
           key: _key,

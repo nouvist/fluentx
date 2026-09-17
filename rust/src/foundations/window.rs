@@ -30,7 +30,8 @@ use windows::{
                 HTTRANSPARENT, NCCALCSIZE_PARAMS, SM_CXSIZEFRAME, SWP_FRAMECHANGED, SWP_NOMOVE,
                 SWP_NOSIZE, SWP_NOZORDER, SW_MAXIMIZE, SW_MINIMIZE, SW_RESTORE, TITLEBARINFOEX,
                 WINDOWPLACEMENT, WM_ACTIVATE, WM_GETTITLEBARINFOEX, WM_NCCALCSIZE, WM_NCHITTEST,
-                WM_NCLBUTTONDOWN, WM_NCLBUTTONUP, WM_SETTINGCHANGE, WM_SIZE, WS_SYSMENU,
+                WM_NCLBUTTONDOWN, WM_NCLBUTTONUP, WM_SETTINGCHANGE, WM_SIZE,
+                WS_SYSMENU,
             },
         },
     },
@@ -54,10 +55,17 @@ struct FxNativeWindowInner {
     hit_event_ptr: *mut FxNativeWindowHitEvent,
     listeners: FxVecEvent<FxNativeWindowEvent>,
     hit_listeners: FxVecEvent<FxNativeWindowHitEvent>,
+    mouse_listeners: FxVecEvent<FxNativeWindowMouseEvent>,
 
     close_rect: RwLock<FxNativeWindowRect>,
     maximize_rect: RwLock<FxNativeWindowRect>,
     minimize_rect: RwLock<FxNativeWindowRect>,
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub enum FxNativeWindowMouseEvent {
+    Down,
+    Up,
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -237,6 +245,7 @@ impl FxNativeWindow {
                 hit_event_ptr: alloc(LAYOUT_U32) as *mut _,
                 listeners: FxVecEvent::default(),
                 hit_listeners: FxVecEvent::default(),
+                mouse_listeners: FxVecEvent::default(),
 
                 close_rect: RwLock::default(),
                 maximize_rect: RwLock::default(),
@@ -423,13 +432,20 @@ impl FxNativeWindow {
             let it = it!(dwrefdata);
             return LRESULT(*it.0.hit_ptr as _);
         } else if umsg == WM_NCLBUTTONDOWN {
+            let it = it!(dwrefdata);
             let wparam = wparam.0 as u32;
+            if *it.0.hit_event_ptr != FxNativeWindowHitEvent::None {
+                it.0.mouse_listeners.invoke(FxNativeWindowMouseEvent::Down);
+            }
             if wparam == HTMAXBUTTON || wparam == HTMINBUTTON || wparam == HTCLOSE {
                 return LRESULT(0);
             }
         } else if umsg == WM_NCLBUTTONUP {
             let it = it!(dwrefdata);
             let wparam = wparam.0 as u32;
+            if *it.0.hit_event_ptr != FxNativeWindowHitEvent::None {
+                it.0.mouse_listeners.invoke(FxNativeWindowMouseEvent::Up);
+            }
             if wparam == HTMAXBUTTON {
                 _ = ShowWindow(
                     hwnd,
@@ -508,6 +524,19 @@ impl FxNativeWindow {
     #[frb(sync)]
     pub fn remove_hit_listener(&self, id: u32) {
         self.0.hit_listeners.remove(id);
+    }
+
+    #[frb(sync)]
+    pub fn add_mouse_listener(
+        &self,
+        callback: impl Fn(FxNativeWindowMouseEvent) -> DartFnFuture<()> + Send + Sync + 'static,
+    ) -> u32 {
+        self.0.mouse_listeners.add(callback)
+    }
+
+    #[frb(sync)]
+    pub fn remove_mouse_listener(&self, id: u32) {
+        self.0.mouse_listeners.remove(id);
     }
 
     #[frb(sync)]
