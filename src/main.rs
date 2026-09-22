@@ -3,11 +3,9 @@ use gpui::{
     prelude::*, px, size,
 };
 
-use crate::design::colors::Colors;
+use crate::foundation::{backdrop::Backdrop, colors::Colors};
 
-pub mod design {
-    pub mod colors;
-}
+pub mod foundation;
 
 struct HelloWorld;
 
@@ -17,33 +15,38 @@ impl Render for HelloWorld {
         div()
             .flex()
             .flex_col()
-            .gap_3()
             .size_full()
             .justify_center()
             .items_center()
-            .text_xl()
-            .bg(c.background.solid.primary)
-            .text_color(c.foreground.primary.primary)
-            .window_control_area(WindowControlArea::Drag)
-            .child("Halo dunia!")
-            .child(div().size_16().bg(c.accent.base))
+            .gap_3()
+            .child(
+                div()
+                    .size_16()
+                    .bg(c.accent.base)
+                    .window_control_area(WindowControlArea::Drag),
+            )
     }
 }
 
 fn main() {
     Application::new().run(|cx: &mut App| {
         let bounds = Bounds::centered(None, size(px(500.), px(500.0)), cx);
-        cx.open_window(
-            WindowOptions {
-                window_bounds: Some(WindowBounds::Windowed(bounds)),
-                titlebar: None,
-                ..Default::default()
-            },
-            |window, cx| {
-                Colors::init(window, cx);
-                cx.new(|_| HelloWorld)
-            },
-        )
+        let options = WindowOptions {
+            titlebar: None,
+            window_bounds: Some(WindowBounds::Windowed(bounds)),
+            ..Default::default()
+        };
+
+        cx.open_window(options, |window, cx| {
+            Colors::init(window, cx);
+            #[cfg(windows)]
+            Backdrop::new(window).map(|it| {
+                it.extend();
+                it.mica();
+            });
+
+            cx.new(|_| HelloWorld)
+        })
         .unwrap();
     });
 }

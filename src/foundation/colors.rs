@@ -126,7 +126,7 @@ impl Colors {
 
     #[cfg(not(windows))]
     pub fn current() -> Self {
-        Self::current_impl().unwrap_or_else(|| Self::light(AccentColors::FALLBACK))
+        Self::light(AccentColors::FALLBACK)
     }
 
     pub fn init(window: &mut Window, cx: &mut App) {
