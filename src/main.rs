@@ -3,33 +3,40 @@ use gpui::{
     prelude::*, px, size,
 };
 
-use crate::foundation::{backdrop::Backdrop, colors::Colors};
+use crate::{
+    elements::titlebar_control,
+    foundation::{
+        assets::Assets,
+        backdrop::Backdrop,
+        colors::{AppColors, Colors},
+    },
+};
 
+pub mod elements;
 pub mod foundation;
 
 struct HelloWorld;
 
 impl Render for HelloWorld {
     fn render(&mut self, _window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
-        let c = cx.global::<Colors>();
         div()
             .flex()
             .flex_col()
             .size_full()
-            .justify_center()
-            .items_center()
-            .gap_3()
             .child(
                 div()
-                    .size_16()
-                    .bg(c.accent.base)
-                    .window_control_area(WindowControlArea::Drag),
+                    .flex()
+                    .w_full()
+                    .h(px(48.))
+                    .child(div().flex_1().window_control_area(WindowControlArea::Drag))
+                    .child(titlebar_control()),
             )
+            .child(div().size_12().bg(cx.colors().accent.base))
     }
 }
 
 fn main() {
-    Application::new().run(|cx: &mut App| {
+    Application::new().with_assets(Assets).run(|cx: &mut App| {
         let bounds = Bounds::centered(None, size(px(500.), px(500.0)), cx);
         let options = WindowOptions {
             titlebar: None,

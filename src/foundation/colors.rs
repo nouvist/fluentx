@@ -32,6 +32,14 @@ pub enum Brightness {
 }
 
 impl Brightness {
+    pub fn is_dark(&self) -> bool {
+        *self == Brightness::Dark
+    }
+
+    pub fn is_light(&self) -> bool {
+        *self == Brightness::Light
+    }
+
     #[cfg(windows)]
     fn current_impl() -> Option<Self> {
         let settings = UISettings::new().ok()?;
@@ -66,6 +74,16 @@ pub struct Colors {
 }
 
 impl Global for Colors {}
+
+pub trait AppColors {
+    fn colors(&self) -> &Colors;
+}
+
+impl AppColors for App {
+    fn colors(&self) -> &Colors {
+        self.global()
+    }
+}
 
 impl Colors {
     pub fn dark(accent: AccentColors) -> Self {
