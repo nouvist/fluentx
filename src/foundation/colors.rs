@@ -152,6 +152,7 @@ impl Colors {
 
         #[cfg(windows)]
         window.observe_window_appearance(Self::handle_init).detach();
+
         #[cfg(not(windows))]
         let _ = window;
     }
